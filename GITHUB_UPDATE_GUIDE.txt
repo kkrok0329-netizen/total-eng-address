@@ -1,0 +1,14 @@
+TOTAL ENG 현장주소 V3.5.3 업데이트 방법
+
+1. TOTAL_ENG_Address_GitHub_Ready_V3_5_3.zip의 압축을 풉니다.
+2. GitHub에서 kkrok0329-netizen/total-eng-address 저장소를 엽니다.
+3. Add file → Upload files를 누릅니다.
+4. 압축을 푼 폴더 안의 파일과 폴더를 모두 선택해 업로드 화면에 끌어놓습니다.
+5. 아래 Commit message에 아래처럼 적습니다.
+   카카오톡 설치 안내 추가 V3.5.3
+6. Commit changes를 누릅니다.
+7. 잠시 기다린 뒤 아래 기존 주소를 카카오톡에서 다시 엽니다.
+   https://kkrok0329-netizen.github.io/total-eng-address/
+
+새 저장소를 만들거나 Pages 설정을 다시 할 필요는 없습니다.
+기존 주소는 그대로 사용합니다.

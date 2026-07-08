@@ -1,6 +1,6 @@
 'use strict';
 
-const APP_VERSION = 'V3.5.2';
+const APP_VERSION = 'V3.5.3';
 const STORAGE_KEYS = {
   favorites: 'tea_favorites',
   recentVisits: 'tea_recentVisits',
@@ -33,7 +33,15 @@ const els = {
   refreshBtn: $('refreshBtn'),
   installBtn: $('installBtn'),
   versionText: $('versionText'),
-  updatedText: $('updatedText')
+  updatedText: $('updatedText'),
+  kakaoGuide: $('kakaoGuide'),
+  kakaoGuideMessage: $('kakaoGuideMessage'),
+  kakaoAndroidSteps: $('kakaoAndroidSteps'),
+  kakaoIosSteps: $('kakaoIosSteps'),
+  openChromeBtn: $('openChromeBtn'),
+  kakaoAndroidFallback: $('kakaoAndroidFallback'),
+  copyAppLinkBtn: $('copyAppLinkBtn'),
+  continueInKakaoBtn: $('continueInKakaoBtn')
 };
 
 function readStoredArray(key) {
@@ -358,9 +366,89 @@ function isIos() {
   return /iphone|ipad|ipod/i.test(window.navigator.userAgent);
 }
 
+function isAndroid() {
+  return /android/i.test(window.navigator.userAgent);
+}
+
+function isKakaoInAppBrowser() {
+  return /kakaotalk/i.test(window.navigator.userAgent || '');
+}
+
+function showKakaoGuide() {
+  if (!els.kakaoGuide || isStandalone()) return;
+
+  const ios = isIos();
+  els.kakaoGuide.hidden = false;
+  els.kakaoGuide.setAttribute('aria-hidden', 'false');
+  document.body.classList.add('kakao-guide-open');
+
+  if (els.kakaoAndroidSteps) els.kakaoAndroidSteps.hidden = ios;
+  if (els.kakaoIosSteps) els.kakaoIosSteps.hidden = !ios;
+  if (els.openChromeBtn) els.openChromeBtn.hidden = ios || !isAndroid();
+  if (els.kakaoAndroidFallback) els.kakaoAndroidFallback.hidden = ios || !isAndroid();
+
+  if (els.kakaoGuideMessage) {
+    els.kakaoGuideMessage.textContent = ios
+      ? 'Safari에서 열면 홈 화면에 앱으로 추가할 수 있어요.'
+      : '아래 버튼을 누르면 Chrome에서 설치할 수 있어요.';
+  }
+
+  window.setTimeout(() => {
+    const focusTarget = ios ? els.copyAppLinkBtn : els.openChromeBtn;
+    focusTarget?.focus();
+  }, 50);
+}
+
+function hideKakaoGuide() {
+  if (!els.kakaoGuide) return;
+  els.kakaoGuide.hidden = true;
+  els.kakaoGuide.setAttribute('aria-hidden', 'true');
+  document.body.classList.remove('kakao-guide-open');
+}
+
+function openInChrome() {
+  const currentUrl = window.location.href;
+
+  if (!isAndroid()) {
+    copyCurrentAppLink();
+    return;
+  }
+
+  const protocol = window.location.protocol.replace(':', '') || 'https';
+  const path = `${window.location.host}${window.location.pathname}${window.location.search}${window.location.hash}`;
+  const fallbackUrl = encodeURIComponent(currentUrl);
+  window.location.href = `intent://${path}#Intent;scheme=${protocol};package=com.android.chrome;S.browser_fallback_url=${fallbackUrl};end`;
+}
+
+async function copyCurrentAppLink() {
+  const currentUrl = window.location.href;
+
+  try {
+    await navigator.clipboard.writeText(currentUrl);
+    toast('앱 주소를 복사했습니다.');
+  } catch (error) {
+    const textarea = document.createElement('textarea');
+    textarea.value = currentUrl;
+    textarea.setAttribute('readonly', '');
+    textarea.style.position = 'fixed';
+    textarea.style.opacity = '0';
+    document.body.appendChild(textarea);
+    textarea.select();
+    const copied = document.execCommand('copy');
+    textarea.remove();
+    toast(copied ? '앱 주소를 복사했습니다.' : '주소를 길게 눌러 복사해 주세요.');
+  }
+}
+
 function updateInstallButton() {
   if (isStandalone()) {
     els.installBtn.hidden = true;
+    return;
+  }
+
+  if (isKakaoInAppBrowser()) {
+    els.installBtn.textContent = '설치안내';
+    els.installBtn.hidden = false;
     return;
   }
 
@@ -377,6 +465,11 @@ function updateInstallButton() {
 }
 
 async function installApp() {
+  if (isKakaoInAppBrowser()) {
+    showKakaoGuide();
+    return;
+  }
+
   if (deferredInstallPrompt) {
     deferredInstallPrompt.prompt();
     await deferredInstallPrompt.userChoice;
@@ -448,6 +541,9 @@ function initEvents() {
   els.darkModeBtn.addEventListener('click', () => applyDarkMode(!document.body.classList.contains('dark')));
   els.refreshBtn.addEventListener('click', loadData);
   els.installBtn.addEventListener('click', installApp);
+  els.openChromeBtn?.addEventListener('click', openInChrome);
+  els.copyAppLinkBtn?.addEventListener('click', copyCurrentAppLink);
+  els.continueInKakaoBtn?.addEventListener('click', hideKakaoGuide);
 
   window.addEventListener('beforeinstallprompt', (event) => {
     event.preventDefault();
@@ -481,6 +577,7 @@ function initialize() {
   initEvents();
   registerServiceWorker();
   updateInstallButton();
+  if (isKakaoInAppBrowser()) showKakaoGuide();
   loadData();
 }
 

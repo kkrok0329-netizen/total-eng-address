@@ -1,8 +1,14 @@
-# TOTAL ENG 현장주소 PWA V3.5.2
+# TOTAL ENG 현장주소 PWA V3.5.3
 
 GitHub Pages에 바로 올릴 수 있도록 정리한 정적 PWA 버전입니다.
 
 ## 이번 수정 내용
+
+- 카카오톡 링크로 접속하면 큰 설치 안내 화면이 자동으로 표시됩니다.
+- Android에서는 `Chrome으로 열기` 버튼을 제공합니다.
+- iPhone에서는 `Safari로 열기 → 공유 → 홈 화면에 추가` 순서를 크게 안내합니다.
+- 안내 화면에서 앱 주소 복사와 `설치하지 않고 일단 사용하기`도 선택할 수 있습니다.
+- 상단 설치 버튼은 카카오톡에서 `설치안내`로 표시됩니다.
 
 - 스마트폰 현장 카드를 위아래로 압축했습니다.
 - 카드 하단의 4개 버튼을 한 줄로 배치했습니다.
@@ -29,7 +35,7 @@ GitHub Pages에 바로 올릴 수 있도록 정리한 정적 PWA 버전입니다
 git init
 git branch -M main
 git add .
-git commit -m "TOTAL ENG 현장주소 PWA V3.5.2 등록"
+git commit -m "TOTAL ENG 현장주소 PWA V3.5.3 등록"
 git remote add origin https://github.com/사용자이름/total-eng-address.git
 git push -u origin main
 ```
@@ -72,3 +78,12 @@ python -m http.server 5500
 ```
 
 브라우저에서 프로젝트 폴더 경로를 포함한 주소로 접속합니다.
+
+
+## 기존 GitHub 저장소 업데이트
+
+이미 `total-eng-address` 저장소와 Pages 주소가 있다면 새 저장소를 만들 필요가 없습니다.
+이 폴더 안의 파일을 기존 저장소에 다시 업로드하고 `Commit changes`를 누르세요.
+기존 주소는 그대로 유지됩니다.
+
+카카오톡에서 변경 전 화면이 계속 보이면 앱 또는 카카오톡 화면을 완전히 닫은 뒤 다시 열어 주세요.

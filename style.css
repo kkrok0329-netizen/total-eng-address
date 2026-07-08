@@ -27,3 +27,28 @@ body.dark .favorite-chip,body.dark .close-detail,body.dark .search-box button{ba
 .detail-summary-grid{grid-template-columns:repeat(2,1fr)}
 .detail-box .meta-row{flex-wrap:wrap;overflow:visible}
 @media(max-width:360px){.site-card{padding:11px 12px}.site-title{font-size:18px}.card-buttons button{font-size:9.5px}.site-card .info-box strong{font-size:10.5px}}
+
+
+/* V3.5.3: 카카오톡 인앱 브라우저 자동 감지 및 큰 설치 안내 화면 */
+.kakao-guide[hidden]{display:none!important}
+.kakao-guide{position:fixed;inset:0;z-index:1200;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(5,18,42,.82);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px)}
+.kakao-guide-card{width:min(100%,400px);max-height:calc(100vh - 36px);overflow:auto;background:#fff;border-radius:27px;padding:24px 20px calc(20px + env(safe-area-inset-bottom,0px));text-align:center;box-shadow:0 24px 70px rgba(0,0,0,.35)}
+.kakao-guide-logo{width:132px;height:auto;margin:0 auto 12px}
+.kakao-guide-label{display:inline-block;padding:7px 11px;border-radius:999px;background:#fff2dc;color:#a85c00;font-size:13px;font-weight:900}
+.kakao-guide h2{margin:14px 0 8px;color:var(--blue);font-size:29px;line-height:1.22;letter-spacing:-1.4px}
+.kakao-guide-message{margin:0;color:#475467;font-size:17px;line-height:1.5;font-weight:700}
+.kakao-guide-steps{margin:18px 0;padding:0;list-style:none;counter-reset:kakao-step;text-align:left}
+.kakao-guide-steps li{position:relative;min-height:48px;margin:9px 0;padding:11px 12px 11px 53px;border-radius:15px;background:#f1f6fd;color:#23324a;font-size:16px;line-height:1.45}
+.kakao-guide-steps li::before{counter-increment:kakao-step;content:counter(kakao-step);position:absolute;left:12px;top:50%;transform:translateY(-50%);display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--blue);color:#fff;font-size:15px;font-weight:900}
+.kakao-primary-btn,.kakao-secondary-btn,.kakao-text-btn{width:100%;border:0;font-weight:900}
+.kakao-primary-btn{min-height:58px;border-radius:16px;background:var(--orange);color:#fff;font-size:20px;box-shadow:0 9px 20px rgba(237,148,20,.28)}
+.kakao-guide-note{margin:8px 4px 2px;color:#667085;font-size:13px;line-height:1.45}
+.kakao-secondary-btn{min-height:52px;margin-top:10px;border-radius:16px;background:#eaf1fb;color:var(--blue);font-size:17px}
+.kakao-text-btn{min-height:46px;margin-top:8px;background:transparent;color:#667085;font-size:15px;text-decoration:underline;text-underline-offset:3px}
+body.kakao-guide-open{overflow:hidden}
+body.dark .kakao-guide-card{background:#1b2230;color:#fff}
+body.dark .kakao-guide h2{color:#8fbaff}
+body.dark .kakao-guide-message,body.dark .kakao-guide-note{color:#d0d5dd}
+body.dark .kakao-guide-steps li{background:#252e3e;color:#f2f4f7}
+body.dark .kakao-secondary-btn{background:#252e3e;color:#fff}
+@media(max-width:360px){.kakao-guide{padding:12px}.kakao-guide-card{padding:20px 15px}.kakao-guide h2{font-size:25px}.kakao-guide-message{font-size:15px}.kakao-guide-steps li{font-size:14px;padding-left:50px}.kakao-primary-btn{font-size:18px}}

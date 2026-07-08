@@ -19,6 +19,32 @@
   <link rel="apple-touch-icon" sizes="180x180" href="./img/icon-180.png" />
 </head>
 <body>
+  <div id="kakaoGuide" class="kakao-guide" hidden aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="kakaoGuideTitle">
+    <div class="kakao-guide-card">
+      <img class="kakao-guide-logo" src="./img/logo.png" alt="TOTAL ENG" />
+      <span class="kakao-guide-label">휴대폰 앱 설치 안내</span>
+      <h2 id="kakaoGuideTitle">카카오톡 안에서는<br />앱 설치가 보이지 않아요</h2>
+      <p id="kakaoGuideMessage" class="kakao-guide-message">아래 버튼을 눌러 Chrome에서 열어 주세요.</p>
+
+      <ol id="kakaoAndroidSteps" class="kakao-guide-steps">
+        <li><strong>Chrome으로 열기</strong> 버튼을 누르세요.</li>
+        <li>Chrome 화면에서 <strong>설치</strong>를 누르세요.</li>
+        <li>휴대폰 바탕화면의 <strong>현장주소</strong>를 누르면 됩니다.</li>
+      </ol>
+
+      <ol id="kakaoIosSteps" class="kakao-guide-steps" hidden>
+        <li>카카오톡 오른쪽 위의 <strong>점 3개(⋯)</strong>를 누르세요.</li>
+        <li><strong>Safari로 열기</strong>를 누르세요.</li>
+        <li>Safari의 <strong>공유 → 홈 화면에 추가</strong>를 누르세요.</li>
+      </ol>
+
+      <button id="openChromeBtn" class="kakao-primary-btn" type="button">Chrome으로 열기</button>
+      <p id="kakaoAndroidFallback" class="kakao-guide-note">버튼이 안 되면 오른쪽 위 <strong>점 3개 → 다른 브라우저로 열기</strong>를 누르세요.</p>
+      <button id="copyAppLinkBtn" class="kakao-secondary-btn" type="button">링크 복사하기</button>
+      <button id="continueInKakaoBtn" class="kakao-text-btn" type="button">설치하지 않고 일단 사용하기</button>
+    </div>
+  </div>
+
   <div id="splash" class="splash" aria-live="polite">
     <img src="./img/logo.png" alt="TOTAL ENG" />
     <strong>현장주소</strong>
@@ -65,7 +91,7 @@
     <main id="siteList" class="site-list"></main>
 
     <footer class="app-footer">
-      <span id="versionText">V3.5.2</span>
+      <span id="versionText">V3.5.3</span>
       <span id="updatedText">업데이트 확인 중</span>
     </footer>
   </div>

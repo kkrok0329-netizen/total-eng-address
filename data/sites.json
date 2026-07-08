@@ -1,6 +1,6 @@
 {
   "meta": {
-    "version": "V3.5.2",
+    "version": "V3.5.3",
     "updatedAt": "2026-07-08",
     "sourceFile": "address.xlsx",
     "generalColumns": "A=NO, B=현장명, C=주소, D=사무실 거리, E=톨비, F=주유비, G=기타, H=Warranty",
