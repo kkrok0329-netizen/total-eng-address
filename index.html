@@ -13,12 +13,12 @@
 
   <title>TOTAL ENG 현장주소</title>
 
-  <link rel="manifest" href="./manifest.json" />
-  <link rel="stylesheet" href="./style.css" />
+  <link rel="manifest" href="./manifest.json?v=3.5.5" />
+  <link rel="stylesheet" href="./style.css?v=3.5.5" />
   <link rel="icon" type="image/png" sizes="32x32" href="./img/favicon-32.png" />
   <link rel="apple-touch-icon" sizes="180x180" href="./img/icon-180.png" />
 </head>
-<body>
+<body data-app-version="V3.5.5">
   <div id="kakaoGuide" class="kakao-guide" hidden aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="kakaoGuideTitle">
     <div class="kakao-guide-card">
       <img class="kakao-guide-logo" src="./img/logo.png" alt="TOTAL ENG" />
@@ -44,6 +44,135 @@
       <button id="continueInKakaoBtn" class="kakao-text-btn" type="button">설치하지 않고 일단 사용하기</button>
     </div>
   </div>
+
+  <script>
+    (function () {
+      'use strict';
+
+      const userAgent = navigator.userAgent || '';
+      const params = new URLSearchParams(window.location.search);
+      const forcedByLink = params.get('from') === 'kakao' || params.get('kakao') === '1';
+      const kakaoUserAgent = /KAKAOTALK|KakaoTalk/i.test(userAgent);
+      const isKakaoContext = kakaoUserAgent || forcedByLink;
+      const isStandalone = window.matchMedia('(display-mode: standalone)').matches
+        || navigator.standalone === true;
+
+      window.__TEA_KAKAO_CONTEXT__ = isKakaoContext;
+
+      function cleanAppUrl() {
+        const url = new URL(window.location.href);
+        url.searchParams.delete('from');
+        url.searchParams.delete('kakao');
+        return url.toString();
+      }
+
+      function isIos() {
+        const ipadDesktopMode = navigator.platform === 'MacIntel'
+          && navigator.maxTouchPoints > 1;
+        return /iphone|ipad|ipod/i.test(userAgent) || ipadDesktopMode;
+      }
+
+      function isAndroid() {
+        return /android/i.test(userAgent);
+      }
+
+      function showGuide() {
+        const guide = document.getElementById('kakaoGuide');
+        if (!guide || isStandalone) return;
+
+        const ios = isIos();
+        const androidSteps = document.getElementById('kakaoAndroidSteps');
+        const iosSteps = document.getElementById('kakaoIosSteps');
+        const openChromeBtn = document.getElementById('openChromeBtn');
+        const androidFallback = document.getElementById('kakaoAndroidFallback');
+        const message = document.getElementById('kakaoGuideMessage');
+
+        guide.hidden = false;
+        guide.setAttribute('aria-hidden', 'false');
+        document.body.classList.add('kakao-guide-open');
+
+        if (androidSteps) androidSteps.hidden = ios;
+        if (iosSteps) iosSteps.hidden = !ios;
+        if (openChromeBtn) openChromeBtn.hidden = ios || !isAndroid();
+        if (androidFallback) androidFallback.hidden = ios || !isAndroid();
+        if (message) {
+          message.textContent = ios
+            ? 'Safari에서 열면 홈 화면에 앱으로 추가할 수 있어요.'
+            : '아래 버튼을 누르면 Chrome에서 설치할 수 있어요.';
+        }
+      }
+
+      function hideGuide() {
+        const guide = document.getElementById('kakaoGuide');
+        if (!guide) return;
+        guide.hidden = true;
+        guide.setAttribute('aria-hidden', 'true');
+        document.body.classList.remove('kakao-guide-open');
+      }
+
+      function openChrome(event) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+
+        if (!isAndroid()) return;
+        const target = new URL(cleanAppUrl());
+        const scheme = target.protocol.replace(':', '') || 'https';
+        const path = `${target.host}${target.pathname}${target.search}${target.hash}`;
+        const fallback = encodeURIComponent(target.toString());
+        window.location.href = `intent://${path}#Intent;scheme=${scheme};package=com.android.chrome;S.browser_fallback_url=${fallback};end`;
+      }
+
+      async function copyLink(event) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        const button = event.currentTarget;
+        const text = cleanAppUrl();
+        let copied = false;
+
+        try {
+          await navigator.clipboard.writeText(text);
+          copied = true;
+        } catch (error) {
+          const textarea = document.createElement('textarea');
+          textarea.value = text;
+          textarea.setAttribute('readonly', '');
+          textarea.style.position = 'fixed';
+          textarea.style.opacity = '0';
+          document.body.appendChild(textarea);
+          textarea.select();
+          copied = document.execCommand('copy');
+          textarea.remove();
+        }
+
+        if (button) {
+          const original = button.textContent;
+          button.textContent = copied ? '복사 완료' : '주소를 길게 눌러 복사해 주세요';
+          window.setTimeout(() => { button.textContent = original; }, 1600);
+        }
+      }
+
+      function continueUse(event) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        hideGuide();
+      }
+
+      window.__TEA_SHOW_KAKAO_GUIDE__ = showGuide;
+      window.__TEA_HIDE_KAKAO_GUIDE__ = hideGuide;
+      window.__TEA_CLEAN_APP_URL__ = cleanAppUrl;
+      window.__TEA_KAKAO_INLINE_BOUND__ = true;
+
+      const openChromeBtn = document.getElementById('openChromeBtn');
+      const copyLinkBtn = document.getElementById('copyAppLinkBtn');
+      const continueBtn = document.getElementById('continueInKakaoBtn');
+
+      openChromeBtn?.addEventListener('click', openChrome, true);
+      copyLinkBtn?.addEventListener('click', copyLink, true);
+      continueBtn?.addEventListener('click', continueUse, true);
+
+      if (isKakaoContext) showGuide();
+    }());
+  </script>
 
   <div id="splash" class="splash" aria-live="polite">
     <img src="./img/logo.png" alt="TOTAL ENG" />
@@ -91,7 +220,7 @@
     <main id="siteList" class="site-list"></main>
 
     <footer class="app-footer">
-      <span id="versionText">V3.5.4</span>
+      <span id="versionText">V3.5.5</span>
       <span id="updatedText">업데이트 확인 중</span>
     </footer>
   </div>
@@ -104,6 +233,6 @@
   </div>
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
-  <script src="./js/app.js" defer></script>
+  <script src="./js/app.js?v=3.5.5" defer></script>
 </body>
 </html>

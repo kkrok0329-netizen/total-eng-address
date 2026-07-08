@@ -1,6 +1,6 @@
 'use strict';
 
-const APP_VERSION = 'V3.5.4';
+const APP_VERSION = 'V3.5.5';
 const STORAGE_KEYS = {
   favorites: 'tea_favorites',
   recentVisits: 'tea_recentVisits',
@@ -432,10 +432,21 @@ function isAndroid() {
 }
 
 function isKakaoInAppBrowser() {
-  return /kakaotalk/i.test(window.navigator.userAgent || '');
+  if (window.__TEA_KAKAO_CONTEXT__ === true) return true;
+
+  const userAgent = window.navigator.userAgent || '';
+  const params = new URLSearchParams(window.location.search);
+  return /KAKAOTALK|KakaoTalk/i.test(userAgent)
+    || params.get('from') === 'kakao'
+    || params.get('kakao') === '1';
 }
 
 function showKakaoGuide() {
+  if (typeof window.__TEA_SHOW_KAKAO_GUIDE__ === 'function') {
+    window.__TEA_SHOW_KAKAO_GUIDE__();
+    return;
+  }
+
   if (!els.kakaoGuide || isStandalone()) return;
 
   const ios = isIos();
@@ -461,6 +472,11 @@ function showKakaoGuide() {
 }
 
 function hideKakaoGuide() {
+  if (typeof window.__TEA_HIDE_KAKAO_GUIDE__ === 'function') {
+    window.__TEA_HIDE_KAKAO_GUIDE__();
+    return;
+  }
+
   if (!els.kakaoGuide) return;
   els.kakaoGuide.hidden = true;
   els.kakaoGuide.setAttribute('aria-hidden', 'true');
@@ -468,7 +484,9 @@ function hideKakaoGuide() {
 }
 
 function openInChrome() {
-  const currentUrl = window.location.href;
+  const currentUrl = typeof window.__TEA_CLEAN_APP_URL__ === 'function'
+    ? window.__TEA_CLEAN_APP_URL__()
+    : window.location.href;
 
   if (!isAndroid()) {
     copyCurrentAppLink();
@@ -482,7 +500,9 @@ function openInChrome() {
 }
 
 async function copyCurrentAppLink() {
-  const currentUrl = window.location.href;
+  const currentUrl = typeof window.__TEA_CLEAN_APP_URL__ === 'function'
+    ? window.__TEA_CLEAN_APP_URL__()
+    : window.location.href;
 
   try {
     await navigator.clipboard.writeText(currentUrl);
@@ -602,9 +622,11 @@ function initEvents() {
   els.darkModeBtn.addEventListener('click', () => applyDarkMode(!document.body.classList.contains('dark')));
   els.refreshBtn.addEventListener('click', loadData);
   els.installBtn.addEventListener('click', installApp);
-  els.openChromeBtn?.addEventListener('click', openInChrome);
-  els.copyAppLinkBtn?.addEventListener('click', copyCurrentAppLink);
-  els.continueInKakaoBtn?.addEventListener('click', hideKakaoGuide);
+  if (!window.__TEA_KAKAO_INLINE_BOUND__) {
+    els.openChromeBtn?.addEventListener('click', openInChrome);
+    els.copyAppLinkBtn?.addEventListener('click', copyCurrentAppLink);
+    els.continueInKakaoBtn?.addEventListener('click', hideKakaoGuide);
+  }
 
   window.addEventListener('beforeinstallprompt', (event) => {
     event.preventDefault();
@@ -624,7 +646,10 @@ function registerServiceWorker() {
 
   window.addEventListener('load', async () => {
     try {
-      const registration = await navigator.serviceWorker.register('./service-worker.js', { scope: './' });
+      const registration = await navigator.serviceWorker.register('./service-worker.js?v=3.5.5', {
+        scope: './',
+        updateViaCache: 'none'
+      });
       registration.update().catch(() => {});
     } catch (error) {
       console.warn('서비스 워커 등록 실패', error);

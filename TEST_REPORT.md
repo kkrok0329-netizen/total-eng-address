@@ -1,39 +1,53 @@
-# 테스트 결과 — V3.5.4
+# TOTAL ENG 현장주소 V3.5.5 테스트 보고서
 
-생성 시점: 2026-07-08
+## 결과
+- 통과: **24/24**
+- 실패: **0**
 
-## 티맵 버튼 수정
+## 핵심 확인
 
-- 기존 Google 검색 주소 제거 확인
-- Android용 TMAP 앱 직접 호출 주소 생성 확인
-- Android TMAP 패키지 ID `com.skt.tmap.ku` 확인
-- Android에 TMAP이 없을 때 Google Play 설치 화면으로 이동하도록 설정 확인
-- iPhone·iPad용 `tmap://search` 앱 호출 주소 확인
-- iPhone·iPad에 TMAP이 없을 때 App Store 안내 기능 확인
-- 현장 주소가 TMAP 검색어로 URL 인코딩되어 전달되는 것 확인
-- 네이버지도와 카카오맵 연결 기능 유지 확인
+- 일반 Chrome에서는 카카오톡 안내창이 자동으로 뜨지 않음
+- Android 카카오톡 User-Agent에서는 큰 안내창이 자동 표시됨
+- iPhone 카카오톡 User-Agent에서는 Safari 설치 안내가 자동 표시됨
+- `?from=kakao` 공유주소에서는 User-Agent와 관계없이 안내창이 표시됨
+- `Chrome으로 열기` 또는 링크 복사 시 `from=kakao` 값이 제거됨
+- 현장 카드 73개 로딩 확인
+- 기존 TMAP 직접 열기 코드 유지
+- JavaScript/CSS에 버전 주소를 적용해 오래된 캐시를 우회
+- 서비스 워커 핵심 파일을 네트워크 우선으로 변경
 
-## 기존 앱 기능 및 데이터
+## 세부 검사
 
-- 현장 73개 확인
-- 일반현장 51개, 쿠팡 22개 확인
-- 모든 현장 주소가 비어 있지 않은 것 확인
-- 앱·HTML·데이터 버전 `V3.5.4` 일치 확인
-- 서비스 워커 캐시 버전 `total-eng-address-v3-5-4` 확인
+- 통과: JavaScript 문법 검사
+- 통과: manifest.json JSON 검사
+- 통과: sites.json JSON 검사
+- 통과: 현장 73개
+- 통과: 화면 버전 V3.5.5
+- 통과: 앱 코드 버전 V3.5.5
+- 통과: 서비스 워커 캐시 V3.5.5
+- 통과: 카카오 UA 감지
+- 통과: 카카오 공유주소 강제 감지
+- 통과: index.html 즉시 감지 스크립트
+- 통과: JS/CSS 캐시 무효화
+- 통과: 서비스 워커 네트워크 우선
+- 통과: 서비스 워커 캐시 우회 갱신
+- 통과: TMAP 직접 호출 유지
+- 통과: HTML 내부 파일 경로
+- 통과: 필수 파일: index.html
+- 통과: 필수 파일: style.css
+- 통과: 필수 파일: js/app.js
+- 통과: 필수 파일: service-worker.js
+- 통과: 필수 파일: manifest.json
+- 통과: 필수 파일: data/sites.json
+- 통과: 필수 파일: img/icon-192.png
+- 통과: 필수 파일: img/icon-512.png
+- 통과: 브라우저 모의 테스트
 
-## 정적/PWA 검사
+## 실제 기기에서 마지막으로 확인할 내용
 
-- JavaScript 문법 검사 통과
-- 서비스 워커 JavaScript 문법 검사 통과
-- `manifest.json` 및 `sites.json` JSON 검사 통과
-- 192×192, 512×512, maskable 512×512 아이콘 크기 확인
-- GitHub Pages 하위 경로 `/total-eng-address/`에서 주요 파일 HTTP 200 확인
-- 총 45개 자동 검사 모두 통과
+- GitHub 업로드 후 화면 아래 버전이 `V3.5.5`인지 확인
+- 카카오톡에서 `https://kkrok0329-netizen.github.io/total-eng-address/?from=kakao`를 눌러 큰 안내창 확인
+- Android에서 `Chrome으로 열기` 버튼 확인
+- 실제 TMAP 앱 전환 확인
 
-## 실제 스마트폰에서 확인할 내용
-
-이 작업 환경에는 실제 TMAP 앱이 설치된 Android·iPhone 기기가 없어서 앱 전환 자체는 자동으로 실행할 수 없었습니다. GitHub에 V3.5.4를 올린 뒤 실제 스마트폰에서 티맵 버튼을 한 번 눌러 최종 확인해 주세요.
-
-- Android: TMAP 앱의 주소 검색 화면이 열려야 합니다.
-- iPhone: TMAP 앱의 주소 검색 화면이 열려야 합니다.
-- TMAP이 설치되지 않은 기기는 앱 설치 화면으로 연결됩니다.
+자동 테스트 환경에는 실제 카카오톡 및 TMAP 앱이 설치되어 있지 않아 앱 간 전환 자체는 스마트폰에서 최종 확인해야 합니다.

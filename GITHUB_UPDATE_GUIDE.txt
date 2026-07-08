@@ -1,13 +1,15 @@
-TOTAL ENG 현장주소 V3.5.4 업데이트 방법
+TOTAL ENG 현장주소 V3.5.5 업데이트 방법
 
-1. TOTAL_ENG_Address_GitHub_Ready_V3_5_4.zip의 압축을 풉니다.
-2. GitHub의 total-eng-address 저장소로 들어갑니다.
+1. TOTAL_ENG_Address_GitHub_Ready_V3_5_5.zip의 압축을 풉니다.
+2. GitHub의 kkrok0329-netizen/total-eng-address 저장소를 엽니다.
 3. Add file → Upload files를 누릅니다.
 4. 압축을 푼 폴더 안의 파일과 폴더 전체를 끌어다 놓습니다.
 5. Commit message에 아래 문구를 입력합니다.
-   티맵 앱 직접 열기 V3.5.4
+   카카오톡 설치안내 캐시 보강 V3.5.5
 6. Commit changes를 누릅니다.
-7. 1~3분 후 기존 주소를 다시 엽니다. 링크 주소는 바뀌지 않습니다.
+7. 1~3분 뒤 아래 주소를 Chrome에서 열고 화면 맨 아래 버전이 V3.5.5인지 확인합니다.
+   https://kkrok0329-netizen.github.io/total-eng-address/
+8. 직원 카카오톡에는 아래 주소를 보내는 것을 권장합니다.
+   https://kkrok0329-netizen.github.io/total-eng-address/?from=kakao
 
-스마트폰에서 티맵 버튼을 누르면 TMAP 앱의 주소 검색 화면이 열립니다.
-Android에 TMAP이 설치되어 있지 않으면 Google Play 설치 화면으로 이동합니다.
+중요: 화면 맨 아래가 V3.5.3 또는 V3.5.4이면 아직 새 파일이 반영되지 않은 것입니다.
