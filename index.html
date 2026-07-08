@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="description" content="TOTAL ENG AS 및 공사 현장 주소 검색 앱" />
+  <meta name="robots" content="noindex, nofollow, noarchive" />
+  <meta name="theme-color" content="#003D8E" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="현장주소" />
+
+  <title>TOTAL ENG 현장주소</title>
+
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="stylesheet" href="./style.css" />
+  <link rel="icon" type="image/png" sizes="32x32" href="./img/favicon-32.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="./img/icon-180.png" />
+</head>
+<body>
+  <div id="splash" class="splash" aria-live="polite">
+    <img src="./img/logo.png" alt="TOTAL ENG" />
+    <strong>현장주소</strong>
+    <span>Loading...</span>
+  </div>
+
+  <div class="app">
+    <header class="app-header">
+      <div class="header-top">
+        <img src="./img/logo.png" class="logo" alt="TOTAL ENG" />
+        <div class="header-actions">
+          <button id="installBtn" class="icon-btn install-btn" type="button" hidden>설치</button>
+          <button id="darkModeBtn" class="icon-btn" type="button" aria-label="다크모드 켜기">🌙</button>
+        </div>
+      </div>
+      <h1>현장주소</h1>
+      <p>AS · 공사 현장 검색 / 주소복사 / 길찾기</p>
+      <div id="headerCount" class="header-count" aria-live="polite">불러오는 중...</div>
+    </header>
+
+    <section class="search-wrap" aria-label="현장 검색">
+      <div class="search-box">
+        <span aria-hidden="true">🔍</span>
+        <input id="searchInput" type="search" placeholder="현장명 또는 주소 검색" autocomplete="off" aria-label="현장명 또는 주소 검색" />
+        <button id="clearBtn" type="button" aria-label="검색어 지우기">✕</button>
+      </div>
+    </section>
+
+    <section id="favoriteTopBox" class="favorite-top-box" aria-label="즐겨찾기 현장"></section>
+
+    <nav class="tabs" aria-label="현장 분류">
+      <button class="tab active" data-type="all" type="button">전체</button>
+      <button class="tab" data-type="general" type="button">일반현장</button>
+      <button class="tab" data-type="coupang" type="button">쿠팡</button>
+      <button class="tab" data-type="favorite" type="button">즐겨찾기</button>
+      <button class="tab" data-type="recent" type="button">최근방문</button>
+    </nav>
+
+    <section class="summary-row">
+      <span id="countText">전체 0개</span>
+      <button id="refreshBtn" type="button">새로고침</button>
+    </section>
+
+    <main id="siteList" class="site-list"></main>
+
+    <footer class="app-footer">
+      <span id="versionText">V3.5.2</span>
+      <span id="updatedText">업데이트 확인 중</span>
+    </footer>
+  </div>
+
+  <div id="detailModal" class="detail-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-label="현장 상세정보">
+    <div class="detail-box">
+      <button id="closeDetailBtn" class="close-detail" type="button" aria-label="상세정보 닫기">✕</button>
+      <div id="detailContent"></div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="./js/app.js" defer></script>
+</body>
+</html>
