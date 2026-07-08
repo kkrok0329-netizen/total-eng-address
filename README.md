@@ -1,4 +1,4 @@
-# TOTAL ENG 현장주소 PWA V3.5.3
+# TOTAL ENG 현장주소 PWA V3.5.4
 
 GitHub Pages에 바로 올릴 수 있도록 정리한 정적 PWA 버전입니다.
 
@@ -35,7 +35,7 @@ GitHub Pages에 바로 올릴 수 있도록 정리한 정적 PWA 버전입니다
 git init
 git branch -M main
 git add .
-git commit -m "TOTAL ENG 현장주소 PWA V3.5.3 등록"
+git commit -m "TOTAL ENG 현장주소 PWA V3.5.4 등록"
 git remote add origin https://github.com/사용자이름/total-eng-address.git
 git push -u origin main
 ```
@@ -87,3 +87,10 @@ python -m http.server 5500
 기존 주소는 그대로 유지됩니다.
 
 카카오톡에서 변경 전 화면이 계속 보이면 앱 또는 카카오톡 화면을 완전히 닫은 뒤 다시 열어 주세요.
+
+## V3.5.4 변경 사항
+
+- `티맵` 버튼이 Google 검색을 여는 대신 스마트폰의 TMAP 앱을 직접 호출합니다.
+- Android에서 TMAP이 없으면 Google Play의 설치 화면으로 연결됩니다.
+- iPhone에서는 TMAP 앱 검색 화면에 현장 주소를 전달합니다.
+- PC에서는 TMAP을 스마트폰에서 열어 달라는 안내가 표시됩니다.

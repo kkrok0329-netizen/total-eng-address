@@ -29,7 +29,7 @@ body.dark .favorite-chip,body.dark .close-detail,body.dark .search-box button{ba
 @media(max-width:360px){.site-card{padding:11px 12px}.site-title{font-size:18px}.card-buttons button{font-size:9.5px}.site-card .info-box strong{font-size:10.5px}}
 
 
-/* V3.5.3: 카카오톡 인앱 브라우저 자동 감지 및 큰 설치 안내 화면 */
+/* V3.5.4: 카카오톡 설치 안내 화면 유지 */
 .kakao-guide[hidden]{display:none!important}
 .kakao-guide{position:fixed;inset:0;z-index:1200;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(5,18,42,.82);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px)}
 .kakao-guide-card{width:min(100%,400px);max-height:calc(100vh - 36px);overflow:auto;background:#fff;border-radius:27px;padding:24px 20px calc(20px + env(safe-area-inset-bottom,0px));text-align:center;box-shadow:0 24px 70px rgba(0,0,0,.35)}

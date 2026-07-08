@@ -1,6 +1,6 @@
 'use strict';
 
-const APP_VERSION = 'V3.5.3';
+const APP_VERSION = 'V3.5.4';
 const STORAGE_KEYS = {
   favorites: 'tea_favorites',
   recentVisits: 'tea_recentVisits',
@@ -306,15 +306,73 @@ async function copyAddress(id) {
   }
 }
 
+function openTmap(site) {
+  const destination = String(site.address || site.name || '').trim();
+  if (!destination) {
+    toast('목적지 주소가 없습니다.');
+    return;
+  }
+
+  const query = encodeURIComponent(destination);
+  toast('티맵을 여는 중입니다.');
+
+  // Android Chrome·삼성 인터넷에서는 intent 주소로 TMAP 앱을 직접 엽니다.
+  // 앱이 설치되어 있지 않으면 Google Play의 TMAP 설치 화면으로 이동합니다.
+  if (isAndroid()) {
+    const playStoreUrl = encodeURIComponent(
+      'https://play.google.com/store/apps/details?id=com.skt.tmap.ku'
+    );
+    window.location.href = `intent://search?name=${query}#Intent;scheme=tmap;package=com.skt.tmap.ku;S.browser_fallback_url=${playStoreUrl};end`;
+    return;
+  }
+
+  // iPhone·iPad에서는 TMAP의 앱 호출 주소를 사용합니다.
+  // 앱이 없을 때는 설치 여부를 묻고 App Store로 연결합니다.
+  if (isIos()) {
+    let appOpened = false;
+    let fallbackTimer = null;
+
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        appOpened = true;
+        window.clearTimeout(fallbackTimer);
+        document.removeEventListener('visibilitychange', handleVisibilityChange);
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.location.href = `tmap://search?name=${query}`;
+
+    fallbackTimer = window.setTimeout(() => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      if (!appOpened && !document.hidden) {
+        const openStore = window.confirm(
+          '티맵 앱이 열리지 않았습니다. App Store에서 티맵을 확인할까요?'
+        );
+        if (openStore) {
+          window.location.href = 'https://apps.apple.com/kr/app/id431589174';
+        }
+      }
+    }, 1800);
+    return;
+  }
+
+  toast('티맵은 스마트폰에서 열어 주세요.');
+}
+
 function openMap(id, type) {
   const site = siteById(id);
   if (!site) return;
 
+  if (type === 'tmap') {
+    openTmap(site);
+    return;
+  }
+
   const query = encodeURIComponent(site.address);
   const urls = {
     naver: `https://map.naver.com/v5/search/${query}`,
-    kakao: `https://map.kakao.com/link/search/${query}`,
-    tmap: `https://www.google.com/search?q=${query}+티맵`
+    kakao: `https://map.kakao.com/link/search/${query}`
   };
 
   const url = urls[type];
@@ -363,7 +421,10 @@ function isStandalone() {
 }
 
 function isIos() {
-  return /iphone|ipad|ipod/i.test(window.navigator.userAgent);
+  const userAgent = window.navigator.userAgent || '';
+  const iPadDesktopMode = window.navigator.platform === 'MacIntel'
+    && window.navigator.maxTouchPoints > 1;
+  return /iphone|ipad|ipod/i.test(userAgent) || iPadDesktopMode;
 }
 
 function isAndroid() {
