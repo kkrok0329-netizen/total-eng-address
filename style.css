@@ -52,3 +52,34 @@ body.dark .kakao-guide-message,body.dark .kakao-guide-note{color:#d0d5dd}
 body.dark .kakao-guide-steps li{background:#252e3e;color:#f2f4f7}
 body.dark .kakao-secondary-btn{background:#252e3e;color:#fff}
 @media(max-width:360px){.kakao-guide{padding:12px}.kakao-guide-card{padding:20px 15px}.kakao-guide h2{font-size:25px}.kakao-guide-message{font-size:15px}.kakao-guide-steps li{font-size:14px;padding-left:50px}.kakao-primary-btn{font-size:18px}}
+
+/* V3.5.6: 현대차·기아차 앱 버튼 및 차량 전송 안내 */
+:root{--hyundai:#002c5f;--kia:#05141f}
+.card-buttons{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.card-buttons button{height:40px;font-size:11px;padding:0 4px}
+.btn-hyundai,.card-buttons button:nth-child(5){background:var(--hyundai)}
+.btn-kia,.card-buttons button:nth-child(6){background:var(--kia)}
+.detail-buttons{grid-template-columns:repeat(2,minmax(0,1fr))}
+
+.vehicle-app-modal[hidden]{display:none!important}
+.vehicle-app-modal{position:fixed;inset:0;z-index:1300;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(5,18,42,.82);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px)}
+.vehicle-app-card{position:relative;width:min(100%,400px);max-height:calc(100vh - 36px);overflow:auto;background:#fff;border-radius:27px;padding:25px 20px calc(20px + env(safe-area-inset-bottom,0px));text-align:center;box-shadow:0 24px 70px rgba(0,0,0,.35)}
+.vehicle-app-close{position:absolute;top:13px;right:13px;width:40px;height:40px;border:0;border-radius:50%;background:#eef2f6;color:#344054;font-size:18px;font-weight:900}
+.vehicle-app-label{display:inline-block;margin-top:4px;padding:7px 11px;border-radius:999px;background:#eaf1fb;color:var(--blue);font-size:13px;font-weight:900}
+.vehicle-app-card h2{margin:15px 34px 7px;color:var(--blue);font-size:29px;line-height:1.2;letter-spacing:-1.2px}
+.vehicle-app-message{margin:0;color:#344054;font-size:17px;line-height:1.5;font-weight:900}
+.vehicle-app-address{margin:14px 0;padding:14px;border:2px dashed #a9bdd9;border-radius:15px;background:#f4f8fd;color:#1d2939;font-size:15px;line-height:1.5;font-weight:800;word-break:keep-all}
+.vehicle-app-steps{margin:15px 0;padding:0;list-style:none;counter-reset:vehicle-step;text-align:left}
+.vehicle-app-steps li{position:relative;min-height:46px;margin:8px 0;padding:11px 11px 11px 51px;border-radius:14px;background:#f1f6fd;color:#23324a;font-size:15px;line-height:1.45}
+.vehicle-app-steps li::before{counter-increment:vehicle-step;content:counter(vehicle-step);position:absolute;left:11px;top:50%;transform:translateY(-50%);display:grid;place-items:center;width:29px;height:29px;border-radius:50%;background:var(--blue);color:#fff;font-size:14px;font-weight:900}
+.vehicle-app-note{margin:4px 3px 13px;color:#667085;font-size:12px;line-height:1.45}
+.vehicle-app-primary,.vehicle-app-secondary{width:100%;border:0;border-radius:16px;font-weight:900}
+.vehicle-app-primary{min-height:58px;background:var(--orange);color:#fff;font-size:19px;box-shadow:0 9px 20px rgba(237,148,20,.28)}
+.vehicle-app-secondary{min-height:49px;margin-top:9px;background:#eaf1fb;color:var(--blue);font-size:16px}
+body.vehicle-app-open{overflow:hidden}
+body.dark .vehicle-app-card{background:#1b2230;color:#fff}
+body.dark .vehicle-app-close,body.dark .vehicle-app-secondary{background:#252e3e;color:#fff}
+body.dark .vehicle-app-card h2{color:#8fbaff}
+body.dark .vehicle-app-message,body.dark .vehicle-app-note{color:#d0d5dd}
+body.dark .vehicle-app-address,body.dark .vehicle-app-steps li{background:#252e3e;color:#f2f4f7;border-color:#475467}
+@media(max-width:360px){.card-buttons button{font-size:10px}.vehicle-app-modal{padding:12px}.vehicle-app-card{padding:22px 15px}.vehicle-app-card h2{font-size:25px}.vehicle-app-address{font-size:14px}.vehicle-app-steps li{font-size:14px;padding-left:49px}.vehicle-app-primary{font-size:17px}}

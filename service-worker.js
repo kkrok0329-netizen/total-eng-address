@@ -1,11 +1,11 @@
-const CACHE_NAME = 'total-eng-address-v3-5-5';
+const CACHE_NAME = 'total-eng-address-v3-5-6';
 const APP_SHELL = [
   './',
   './index.html',
-  './style.css?v=3.5.5',
-  './manifest.json?v=3.5.5',
+  './style.css?v=3.5.6',
+  './manifest.json?v=3.5.6',
   './robots.txt',
-  './js/app.js?v=3.5.5',
+  './js/app.js?v=3.5.6',
   './data/sites.json',
   './img/logo.png',
   './img/favicon-32.png',

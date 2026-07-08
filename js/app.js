@@ -1,6 +1,6 @@
 'use strict';
 
-const APP_VERSION = 'V3.5.5';
+const APP_VERSION = 'V3.5.6';
 const STORAGE_KEYS = {
   favorites: 'tea_favorites',
   recentVisits: 'tea_recentVisits',
@@ -15,6 +15,7 @@ let deferredInstallPrompt = null;
 let favorites = readStoredArray(STORAGE_KEYS.favorites);
 let recentVisits = readStoredArray(STORAGE_KEYS.recentVisits);
 let recentSearches = readStoredArray(STORAGE_KEYS.recentSearches);
+let vehicleAppState = null;
 
 const $ = (id) => document.getElementById(id);
 const els = {
@@ -41,7 +42,15 @@ const els = {
   openChromeBtn: $('openChromeBtn'),
   kakaoAndroidFallback: $('kakaoAndroidFallback'),
   copyAppLinkBtn: $('copyAppLinkBtn'),
-  continueInKakaoBtn: $('continueInKakaoBtn')
+  continueInKakaoBtn: $('continueInKakaoBtn'),
+  vehicleAppModal: $('vehicleAppModal'),
+  vehicleAppTitle: $('vehicleAppTitle'),
+  vehicleAppMessage: $('vehicleAppMessage'),
+  vehicleAppAddress: $('vehicleAppAddress'),
+  vehicleAppSteps: $('vehicleAppSteps'),
+  openVehicleAppBtn: $('openVehicleAppBtn'),
+  copyVehicleAddressBtn: $('copyVehicleAddressBtn'),
+  closeVehicleAppBtn: $('closeVehicleAppBtn')
 };
 
 function readStoredArray(key) {
@@ -202,6 +211,8 @@ function siteCard(site) {
       <button type="button" data-action="map" data-map="tmap" data-id="${id}">🚗 티맵</button>
       <button type="button" data-action="map" data-map="kakao" data-id="${id}">카카오내비</button>
       <button type="button" data-action="map" data-map="naver" data-id="${id}">네이버지도</button>
+      <button type="button" data-action="vehicle-app" data-vehicle-app="hyundai" data-id="${id}">현대차</button>
+      <button type="button" data-action="vehicle-app" data-vehicle-app="kia" data-id="${id}">기아차</button>
     </div>
   </article>`;
 }
@@ -266,6 +277,8 @@ function openDetail(id) {
       <button class="btn-tmap" type="button" data-action="map" data-map="tmap" data-id="${numericId}">🚗 티맵</button>
       <button class="btn-kakao" type="button" data-action="map" data-map="kakao" data-id="${numericId}">카카오내비</button>
       <button class="btn-naver" type="button" data-action="map" data-map="naver" data-id="${numericId}">네이버지도</button>
+      <button class="btn-hyundai" type="button" data-action="vehicle-app" data-vehicle-app="hyundai" data-id="${numericId}">현대차</button>
+      <button class="btn-kia" type="button" data-action="vehicle-app" data-vehicle-app="kia" data-id="${numericId}">기아차</button>
     </div>`;
 
   els.detailModal.classList.add('show');
@@ -360,6 +373,108 @@ function openTmap(site) {
   toast('티맵은 스마트폰에서 열어 주세요.');
 }
 
+
+const VEHICLE_APPS = {
+  hyundai: {
+    name: '마이현대',
+    shortName: '현대차',
+    androidPackage: 'com.hyundai.oneapp.kr',
+    playStoreUrl: 'https://play.google.com/store/apps/details?id=com.hyundai.oneapp.kr',
+    appStoreUrl: 'https://apps.apple.com/kr/app/id6714472723'
+  },
+  kia: {
+    name: 'Kia App',
+    shortName: '기아차',
+    androidPackage: 'com.kia.oneapp.kr',
+    playStoreUrl: 'https://play.google.com/store/apps/details?id=com.kia.oneapp.kr',
+    appStoreUrl: 'https://apps.apple.com/kr/app/id6590612538'
+  }
+};
+
+async function copyText(value) {
+  try {
+    await navigator.clipboard.writeText(value);
+    return true;
+  } catch (error) {
+    const textarea = document.createElement('textarea');
+    textarea.value = value;
+    textarea.setAttribute('readonly', '');
+    textarea.style.position = 'fixed';
+    textarea.style.opacity = '0';
+    document.body.appendChild(textarea);
+    textarea.select();
+    const copied = document.execCommand('copy');
+    textarea.remove();
+    return copied;
+  }
+}
+
+async function openVehicleAppGuide(id, type) {
+  const site = siteById(id);
+  const config = VEHICLE_APPS[type];
+  if (!site || !config || !els.vehicleAppModal) return;
+
+  vehicleAppState = { site, type, config };
+  const copied = await copyText(site.address);
+
+  els.vehicleAppTitle.textContent = `${config.name}로 보내기`;
+  els.vehicleAppMessage.textContent = copied
+    ? '현장주소를 복사해 두었습니다.'
+    : '아래 주소를 길게 눌러 복사해 주세요.';
+  els.vehicleAppAddress.textContent = site.address;
+  els.vehicleAppSteps.innerHTML = `
+    <li><strong>${config.name}</strong> 앱을 여세요.</li>
+    <li>지도 또는 목적지 검색창을 길게 눌러 <strong>붙여넣기</strong> 하세요.</li>
+    <li>차량 연동 메뉴에서 <strong>차량으로 전송</strong>을 선택하세요.</li>`;
+
+  if (isAndroid()) {
+    els.openVehicleAppBtn.textContent = `${config.name} 앱 열기`;
+  } else if (isIos()) {
+    els.openVehicleAppBtn.textContent = `${config.name} App Store에서 열기`;
+  } else {
+    els.openVehicleAppBtn.textContent = `${config.name} 설치 페이지 열기`;
+  }
+
+  els.vehicleAppModal.hidden = false;
+  els.vehicleAppModal.setAttribute('aria-hidden', 'false');
+  document.body.classList.add('vehicle-app-open');
+  window.setTimeout(() => els.openVehicleAppBtn?.focus(), 50);
+}
+
+function closeVehicleAppGuide() {
+  if (!els.vehicleAppModal) return;
+  els.vehicleAppModal.hidden = true;
+  els.vehicleAppModal.setAttribute('aria-hidden', 'true');
+  document.body.classList.remove('vehicle-app-open');
+  vehicleAppState = null;
+}
+
+async function copyVehicleAddress() {
+  if (!vehicleAppState) return;
+  const copied = await copyText(vehicleAppState.site.address);
+  toast(copied ? '현장주소를 다시 복사했습니다.' : '주소 복사에 실패했습니다.');
+}
+
+function launchVehicleApp() {
+  if (!vehicleAppState) return;
+  const { config } = vehicleAppState;
+
+  if (isAndroid()) {
+    const fallbackUrl = encodeURIComponent(config.playStoreUrl);
+    window.location.href = `intent:#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;package=${config.androidPackage};S.browser_fallback_url=${fallbackUrl};end`;
+    return;
+  }
+
+  if (isIos()) {
+    // 현대·기아 앱은 공개된 웹 딥링크가 확인되지 않아 App Store 페이지로 연결합니다.
+    // 앱이 설치되어 있으면 App Store의 “열기” 버튼을 눌러 실행할 수 있습니다.
+    window.location.href = config.appStoreUrl;
+    return;
+  }
+
+  window.open(config.playStoreUrl, '_blank', 'noopener,noreferrer');
+}
+
 function openMap(id, type) {
   const site = siteById(id);
   if (!site) return;
@@ -408,6 +523,12 @@ function handleAction(event) {
   if (action === 'map') {
     event.stopPropagation();
     openMap(id, actionTarget.dataset.map);
+    return;
+  }
+
+  if (action === 'vehicle-app') {
+    event.stopPropagation();
+    openVehicleAppGuide(id, actionTarget.dataset.vehicleApp);
     return;
   }
 
@@ -615,8 +736,21 @@ function initEvents() {
   els.detailModal.addEventListener('click', (event) => {
     if (event.target === els.detailModal) closeDetail();
   });
+
+  els.openVehicleAppBtn?.addEventListener('click', launchVehicleApp);
+  els.copyVehicleAddressBtn?.addEventListener('click', copyVehicleAddress);
+  els.closeVehicleAppBtn?.addEventListener('click', closeVehicleAppGuide);
+  els.vehicleAppModal?.addEventListener('click', (event) => {
+    if (event.target === els.vehicleAppModal) closeVehicleAppGuide();
+  });
+
   document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape' && els.detailModal.classList.contains('show')) closeDetail();
+    if (event.key !== 'Escape') return;
+    if (els.vehicleAppModal && !els.vehicleAppModal.hidden) {
+      closeVehicleAppGuide();
+      return;
+    }
+    if (els.detailModal.classList.contains('show')) closeDetail();
   });
 
   els.darkModeBtn.addEventListener('click', () => applyDarkMode(!document.body.classList.contains('dark')));
@@ -646,7 +780,7 @@ function registerServiceWorker() {
 
   window.addEventListener('load', async () => {
     try {
-      const registration = await navigator.serviceWorker.register('./service-worker.js?v=3.5.5', {
+      const registration = await navigator.serviceWorker.register('./service-worker.js?v=3.5.6', {
         scope: './',
         updateViaCache: 'none'
       });

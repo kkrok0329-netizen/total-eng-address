@@ -13,12 +13,12 @@
 
   <title>TOTAL ENG 현장주소</title>
 
-  <link rel="manifest" href="./manifest.json?v=3.5.5" />
-  <link rel="stylesheet" href="./style.css?v=3.5.5" />
+  <link rel="manifest" href="./manifest.json?v=3.5.6" />
+  <link rel="stylesheet" href="./style.css?v=3.5.6" />
   <link rel="icon" type="image/png" sizes="32x32" href="./img/favicon-32.png" />
   <link rel="apple-touch-icon" sizes="180x180" href="./img/icon-180.png" />
 </head>
-<body data-app-version="V3.5.5">
+<body data-app-version="V3.5.6">
   <div id="kakaoGuide" class="kakao-guide" hidden aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="kakaoGuideTitle">
     <div class="kakao-guide-card">
       <img class="kakao-guide-logo" src="./img/logo.png" alt="TOTAL ENG" />
@@ -220,7 +220,7 @@
     <main id="siteList" class="site-list"></main>
 
     <footer class="app-footer">
-      <span id="versionText">V3.5.5</span>
+      <span id="versionText">V3.5.6</span>
       <span id="updatedText">업데이트 확인 중</span>
     </footer>
   </div>
@@ -232,7 +232,21 @@
     </div>
   </div>
 
+  <div id="vehicleAppModal" class="vehicle-app-modal" hidden aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="vehicleAppTitle">
+    <div class="vehicle-app-card">
+      <button id="closeVehicleAppBtn" class="vehicle-app-close" type="button" aria-label="차량 앱 안내 닫기">✕</button>
+      <span class="vehicle-app-label">차량 내비게이션으로 보내기</span>
+      <h2 id="vehicleAppTitle">차량 앱으로 보내기</h2>
+      <p id="vehicleAppMessage" class="vehicle-app-message">현장주소를 복사해 두었습니다.</p>
+      <div id="vehicleAppAddress" class="vehicle-app-address"></div>
+      <ol id="vehicleAppSteps" class="vehicle-app-steps"></ol>
+      <p class="vehicle-app-note">차량 등록 및 커넥티드 서비스 가입 여부에 따라 메뉴가 다를 수 있습니다.</p>
+      <button id="openVehicleAppBtn" class="vehicle-app-primary" type="button">차량 앱 열기</button>
+      <button id="copyVehicleAddressBtn" class="vehicle-app-secondary" type="button">주소 다시 복사</button>
+    </div>
+  </div>
+
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
-  <script src="./js/app.js?v=3.5.5" defer></script>
+  <script src="./js/app.js?v=3.5.6" defer></script>
 </body>
 </html>

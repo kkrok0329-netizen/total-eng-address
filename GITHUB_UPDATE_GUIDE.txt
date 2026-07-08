@@ -1,15 +1,21 @@
-TOTAL ENG 현장주소 V3.5.5 업데이트 방법
+TOTAL ENG 현장주소 V3.5.6 업데이트 방법
 
-1. TOTAL_ENG_Address_GitHub_Ready_V3_5_5.zip의 압축을 풉니다.
+1. TOTAL_ENG_Address_GitHub_Ready_V3_5_6.zip의 압축을 풉니다.
 2. GitHub의 kkrok0329-netizen/total-eng-address 저장소를 엽니다.
 3. Add file → Upload files를 누릅니다.
 4. 압축을 푼 폴더 안의 파일과 폴더 전체를 끌어다 놓습니다.
 5. Commit message에 아래 문구를 입력합니다.
-   카카오톡 설치안내 캐시 보강 V3.5.5
+   현대차·기아차 버튼 추가 V3.5.6
 6. Commit changes를 누릅니다.
-7. 1~3분 뒤 아래 주소를 Chrome에서 열고 화면 맨 아래 버전이 V3.5.5인지 확인합니다.
-   https://kkrok0329-netizen.github.io/total-eng-address/
+7. 1~3분 뒤 아래 주소를 Chrome에서 열고 화면 맨 아래 버전이 V3.5.6인지 확인합니다.
+   https://kkrok0329-netizen.github.io/total-eng-address/?update=356
 8. 직원 카카오톡에는 아래 주소를 보내는 것을 권장합니다.
    https://kkrok0329-netizen.github.io/total-eng-address/?from=kakao
 
-중요: 화면 맨 아래가 V3.5.3 또는 V3.5.4이면 아직 새 파일이 반영되지 않은 것입니다.
+추가된 기능
+- 현대차 버튼: 주소 복사 → 마이현대 앱 열기 시도
+- 기아차 버튼: 주소 복사 → Kia App 열기 시도
+- iPhone에서는 App Store 페이지를 열고, 설치된 앱이면 “열기”를 누릅니다.
+- Google 지도 버튼은 포함하지 않았습니다.
+
+중요: 화면 맨 아래가 V3.5.6이 아니면 아직 새 파일이 반영되지 않은 것입니다.
