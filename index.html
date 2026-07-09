@@ -13,12 +13,12 @@
 
   <title>TOTAL ENG 현장주소</title>
 
-  <link rel="manifest" href="./manifest.json?v=3.5.6" />
-  <link rel="stylesheet" href="./style.css?v=3.5.6" />
+  <link rel="manifest" href="./manifest.json?v=3.5.7" />
+  <link rel="stylesheet" href="./style.css?v=3.5.7" />
   <link rel="icon" type="image/png" sizes="32x32" href="./img/favicon-32.png" />
   <link rel="apple-touch-icon" sizes="180x180" href="./img/icon-180.png" />
 </head>
-<body data-app-version="V3.5.6">
+<body data-app-version="V3.5.7">
   <div id="kakaoGuide" class="kakao-guide" hidden aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="kakaoGuideTitle">
     <div class="kakao-guide-card">
       <img class="kakao-guide-logo" src="./img/logo.png" alt="TOTAL ENG" />
@@ -186,7 +186,7 @@
         <img src="./img/logo.png" class="logo" alt="TOTAL ENG" />
         <div class="header-actions">
           <button id="installBtn" class="icon-btn install-btn" type="button" hidden>설치</button>
-          <button id="darkModeBtn" class="icon-btn" type="button" aria-label="다크모드 켜기">🌙</button>
+          <button id="settingsBtn" class="icon-btn settings-btn" type="button" aria-label="설정 열기">⚙️</button>
         </div>
       </div>
       <h1>현장주소</h1>
@@ -220,7 +220,7 @@
     <main id="siteList" class="site-list"></main>
 
     <footer class="app-footer">
-      <span id="versionText">V3.5.6</span>
+      <span id="versionText">V3.5.7</span>
       <span id="updatedText">업데이트 확인 중</span>
     </footer>
   </div>
@@ -246,7 +246,120 @@
     </div>
   </div>
 
+  <div id="settingsModal" class="settings-modal" hidden aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+    <div class="settings-sheet">
+      <div class="settings-head">
+        <div>
+          <span class="settings-label">앱 관리</span>
+          <h2 id="settingsTitle">설정</h2>
+        </div>
+        <button id="closeSettingsBtn" class="settings-close" type="button" aria-label="설정 닫기">✕</button>
+      </div>
+
+      <section class="settings-section">
+        <div class="settings-row">
+          <div>
+            <strong>다크모드</strong>
+            <p>화면을 어둡게 표시합니다.</p>
+          </div>
+          <label class="switch" aria-label="다크모드 설정">
+            <input id="darkModeToggle" type="checkbox" />
+            <span class="switch-slider"></span>
+          </label>
+        </div>
+      </section>
+
+      <section class="settings-section">
+        <div class="settings-section-title">
+          <div>
+            <strong>현장주소 관리</strong>
+            <p>현장을 추가하거나 기존 정보를 수정할 수 있습니다.</p>
+          </div>
+          <button id="addSiteBtn" class="settings-primary-small" type="button">+ 주소 추가</button>
+        </div>
+
+        <div class="settings-warning">
+          여기서 수정한 내용은 먼저 <strong>이 휴대폰에만 저장</strong>됩니다. 직원 전체에게 반영하려면 아래의 <strong>sites.json 내려받기</strong> 후 GitHub의 <strong>data/sites.json</strong>을 교체해야 합니다.
+        </div>
+
+        <div class="settings-search">
+          <span aria-hidden="true">🔍</span>
+          <input id="settingsSiteSearch" type="search" placeholder="현장명 또는 주소 검색" autocomplete="off" />
+        </div>
+        <div id="settingsSiteList" class="settings-site-list" aria-live="polite"></div>
+      </section>
+
+      <section class="settings-section settings-actions">
+        <button id="exportSitesBtn" class="settings-export-btn" type="button">GitHub 반영용 sites.json 내려받기</button>
+        <button id="resetSitesBtn" class="settings-reset-btn" type="button">공식 GitHub 데이터로 되돌리기</button>
+      </section>
+    </div>
+  </div>
+
+  <div id="siteEditorModal" class="site-editor-modal" hidden aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="siteEditorTitle">
+    <div class="site-editor-sheet">
+      <div class="settings-head">
+        <div>
+          <span class="settings-label">현장주소 관리</span>
+          <h2 id="siteEditorTitle">현장 추가</h2>
+        </div>
+        <button id="closeSiteEditorBtn" class="settings-close" type="button" aria-label="현장 편집 닫기">✕</button>
+      </div>
+
+      <form id="siteEditorForm" class="site-editor-form">
+        <input id="siteIdInput" type="hidden" />
+
+        <label>
+          <span>구분</span>
+          <select id="siteTypeInput" required>
+            <option value="general">일반현장</option>
+            <option value="coupang">쿠팡</option>
+          </select>
+        </label>
+
+        <label>
+          <span>현장명 *</span>
+          <input id="siteNameInput" type="text" maxlength="80" required placeholder="예: 안성다이소" />
+        </label>
+
+        <label>
+          <span>주소 *</span>
+          <textarea id="siteAddressInput" rows="3" maxlength="200" required placeholder="도로명 주소를 입력하세요"></textarea>
+        </label>
+
+        <div class="site-editor-grid">
+          <label>
+            <span>거리(km)</span>
+            <input id="siteDistanceInput" type="number" min="0" step="0.1" inputmode="decimal" />
+          </label>
+          <label>
+            <span>톨비(원)</span>
+            <input id="siteTollInput" type="number" min="0" step="1" inputmode="numeric" />
+          </label>
+          <label>
+            <span>주유비(원)</span>
+            <input id="siteFuelInput" type="number" min="0" step="1" inputmode="numeric" />
+          </label>
+          <label>
+            <span>Warranty</span>
+            <input id="siteWarrantyInput" type="text" maxlength="40" placeholder="예: 2027-09-21" />
+          </label>
+        </div>
+
+        <label>
+          <span>기타 메모</span>
+          <input id="siteNoteInput" type="text" maxlength="120" placeholder="층수, 출입 안내 등" />
+        </label>
+
+        <div class="site-editor-actions">
+          <button id="deleteSiteBtn" class="site-delete-btn" type="button" hidden>현장 삭제</button>
+          <button class="site-save-btn" type="submit">저장하기</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
-  <script src="./js/app.js?v=3.5.6" defer></script>
+  <script src="./js/app.js?v=3.5.7" defer></script>
 </body>
 </html>

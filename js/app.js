@@ -1,15 +1,19 @@
 'use strict';
 
-const APP_VERSION = 'V3.5.6';
+const APP_VERSION = 'V3.5.7';
 const STORAGE_KEYS = {
   favorites: 'tea_favorites',
   recentVisits: 'tea_recentVisits',
   recentSearches: 'tea_recentSearches',
-  darkMode: 'tea_darkMode'
+  darkMode: 'tea_darkMode',
+  siteDraft: 'tea_siteDraft_v1'
 };
 
 let sites = [];
+let officialSites = [];
+let officialMeta = {};
 let meta = {};
+let localDraftActive = false;
 let currentType = 'all';
 let deferredInstallPrompt = null;
 let favorites = readStoredArray(STORAGE_KEYS.favorites);
@@ -29,7 +33,29 @@ const els = {
   detailModal: $('detailModal'),
   detailContent: $('detailContent'),
   closeDetailBtn: $('closeDetailBtn'),
-  darkModeBtn: $('darkModeBtn'),
+  settingsBtn: $('settingsBtn'),
+  settingsModal: $('settingsModal'),
+  closeSettingsBtn: $('closeSettingsBtn'),
+  darkModeToggle: $('darkModeToggle'),
+  addSiteBtn: $('addSiteBtn'),
+  settingsSiteSearch: $('settingsSiteSearch'),
+  settingsSiteList: $('settingsSiteList'),
+  exportSitesBtn: $('exportSitesBtn'),
+  resetSitesBtn: $('resetSitesBtn'),
+  siteEditorModal: $('siteEditorModal'),
+  closeSiteEditorBtn: $('closeSiteEditorBtn'),
+  siteEditorForm: $('siteEditorForm'),
+  siteEditorTitle: $('siteEditorTitle'),
+  siteIdInput: $('siteIdInput'),
+  siteTypeInput: $('siteTypeInput'),
+  siteNameInput: $('siteNameInput'),
+  siteAddressInput: $('siteAddressInput'),
+  siteDistanceInput: $('siteDistanceInput'),
+  siteTollInput: $('siteTollInput'),
+  siteFuelInput: $('siteFuelInput'),
+  siteWarrantyInput: $('siteWarrantyInput'),
+  siteNoteInput: $('siteNoteInput'),
+  deleteSiteBtn: $('deleteSiteBtn'),
   toast: $('toast'),
   refreshBtn: $('refreshBtn'),
   installBtn: $('installBtn'),
@@ -67,6 +93,59 @@ function saveStorage() {
   localStorage.setItem(STORAGE_KEYS.favorites, JSON.stringify(favorites));
   localStorage.setItem(STORAGE_KEYS.recentVisits, JSON.stringify(recentVisits));
   localStorage.setItem(STORAGE_KEYS.recentSearches, JSON.stringify(recentSearches));
+}
+
+function normalizeSite(site) {
+  return {
+    id: Number(site?.id) || 0,
+    type: site?.type === 'coupang' ? 'coupang' : 'general',
+    name: String(site?.name || '').trim(),
+    address: String(site?.address || '').trim(),
+    distance: site?.distance === '' || site?.distance === null || site?.distance === undefined
+      ? ''
+      : cleanNumber(site.distance),
+    toll: site?.toll === '' || site?.toll === null || site?.toll === undefined
+      ? ''
+      : cleanNumber(site.toll),
+    fuel: site?.fuel === '' || site?.fuel === null || site?.fuel === undefined
+      ? ''
+      : cleanNumber(site.fuel),
+    note: String(site?.note || '').trim(),
+    warranty: String(site?.warranty || '').trim()
+  };
+}
+
+function readSiteDraft() {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(STORAGE_KEYS.siteDraft) || 'null');
+    if (!parsed || !Array.isArray(parsed.sites)) return null;
+    return {
+      savedAt: parsed.savedAt || '',
+      sites: parsed.sites.map(normalizeSite)
+    };
+  } catch (error) {
+    console.warn('현장 수정본 복구 실패', error);
+    return null;
+  }
+}
+
+function saveSiteDraft() {
+  const savedAt = new Date().toISOString();
+  localStorage.setItem(STORAGE_KEYS.siteDraft, JSON.stringify({
+    savedAt,
+    sites: sites.map(normalizeSite)
+  }));
+  localDraftActive = true;
+  meta = {
+    ...meta,
+    updatedAt: savedAt.slice(0, 10),
+    localDraft: true
+  };
+}
+
+function clearSiteDraft() {
+  localStorage.removeItem(STORAGE_KEYS.siteDraft);
+  localDraftActive = false;
 }
 
 function escapeHtml(value) {
@@ -115,11 +194,27 @@ async function loadData() {
     if (!response.ok) throw new Error('sites.json을 찾을 수 없습니다.');
 
     const data = await response.json();
-    meta = data.meta || {};
-    sites = Array.isArray(data.sites) ? data.sites : [];
+    officialMeta = data.meta || {};
+    meta = { ...officialMeta };
+    officialSites = Array.isArray(data.sites) ? data.sites.map(normalizeSite) : [];
+
+    const draft = readSiteDraft();
+    if (draft) {
+      sites = draft.sites;
+      localDraftActive = true;
+      meta = {
+        ...meta,
+        updatedAt: draft.savedAt ? draft.savedAt.slice(0, 10) : meta.updatedAt,
+        localDraft: true
+      };
+    } else {
+      sites = officialSites.map((site) => ({ ...site }));
+      localDraftActive = false;
+    }
 
     updateMeta();
     render();
+    renderSettingsSiteList();
   } catch (error) {
     console.error(error);
     els.siteList.innerHTML = '';
@@ -140,7 +235,11 @@ function setLoading(text) {
 function updateMeta() {
   if (els.headerCount) els.headerCount.textContent = `${sites.length}개 현장`;
   if (els.versionText) els.versionText.textContent = APP_VERSION;
-  if (els.updatedText) els.updatedText.textContent = `업데이트 ${meta.updatedAt || '-'}`;
+  if (els.updatedText) {
+    els.updatedText.textContent = localDraftActive
+      ? `내 기기 수정본 ${meta.updatedAt || '-'}`
+      : `업데이트 ${meta.updatedAt || '-'}`;
+  }
 }
 
 function filteredSites() {
@@ -537,6 +636,188 @@ function handleAction(event) {
   }
 }
 
+
+function openSettings() {
+  if (!els.settingsModal) return;
+  closeDetail();
+  els.settingsModal.hidden = false;
+  els.settingsModal.setAttribute('aria-hidden', 'false');
+  document.body.classList.add('settings-open');
+  if (els.darkModeToggle) {
+    els.darkModeToggle.checked = document.body.classList.contains('dark');
+  }
+  if (els.settingsSiteSearch) els.settingsSiteSearch.value = '';
+  renderSettingsSiteList();
+  window.setTimeout(() => els.addSiteBtn?.focus(), 40);
+}
+
+function closeSettings() {
+  if (!els.settingsModal) return;
+  els.settingsModal.hidden = true;
+  els.settingsModal.setAttribute('aria-hidden', 'true');
+  document.body.classList.remove('settings-open');
+}
+
+function renderSettingsSiteList() {
+  if (!els.settingsSiteList) return;
+  const keyword = String(els.settingsSiteSearch?.value || '').trim().toLowerCase();
+  const filtered = sites.filter((site) => {
+    if (!keyword) return true;
+    return `${site.name} ${site.address}`.toLowerCase().includes(keyword);
+  });
+
+  if (!filtered.length) {
+    els.settingsSiteList.innerHTML = '<div class="settings-empty">해당 현장을 찾을 수 없습니다.</div>';
+    return;
+  }
+
+  els.settingsSiteList.innerHTML = filtered.map((site) => `
+    <div class="settings-site-item">
+      <button class="settings-site-edit" type="button" data-edit-site-id="${Number(site.id)}">
+        <span class="settings-site-type">${site.type === 'coupang' ? '쿠팡' : '일반'}</span>
+        <strong>${escapeHtml(site.name)}</strong>
+        <small>${escapeHtml(site.address)}</small>
+      </button>
+    </div>`).join('');
+}
+
+function nextSiteId() {
+  return sites.reduce((maxId, site) => Math.max(maxId, Number(site.id) || 0), 0) + 1;
+}
+
+function valueOrBlank(input) {
+  const value = String(input?.value || '').trim();
+  return value === '' ? '' : cleanNumber(value);
+}
+
+function openSiteEditor(id = null) {
+  if (!els.siteEditorModal || !els.siteEditorForm) return;
+  const site = id === null ? null : siteById(id);
+
+  els.siteEditorForm.reset();
+  els.siteIdInput.value = site ? String(site.id) : '';
+  els.siteTypeInput.value = site?.type === 'coupang' ? 'coupang' : 'general';
+  els.siteNameInput.value = site?.name || '';
+  els.siteAddressInput.value = site?.address || '';
+  els.siteDistanceInput.value = site?.distance ?? '';
+  els.siteTollInput.value = site?.toll ?? '';
+  els.siteFuelInput.value = site?.fuel ?? '';
+  els.siteWarrantyInput.value = site?.warranty || '';
+  els.siteNoteInput.value = site?.note || '';
+  els.siteEditorTitle.textContent = site ? '현장 수정' : '현장 추가';
+  els.deleteSiteBtn.hidden = !site;
+
+  els.siteEditorModal.hidden = false;
+  els.siteEditorModal.setAttribute('aria-hidden', 'false');
+  document.body.classList.add('site-editor-open');
+  window.setTimeout(() => els.siteNameInput?.focus(), 40);
+}
+
+function closeSiteEditor() {
+  if (!els.siteEditorModal) return;
+  els.siteEditorModal.hidden = true;
+  els.siteEditorModal.setAttribute('aria-hidden', 'true');
+  document.body.classList.remove('site-editor-open');
+}
+
+function saveSiteFromForm(event) {
+  event.preventDefault();
+
+  const idValue = Number(els.siteIdInput.value || 0);
+  const name = String(els.siteNameInput.value || '').trim();
+  const address = String(els.siteAddressInput.value || '').trim();
+
+  if (!name || !address) {
+    toast('현장명과 주소를 입력해 주세요.');
+    return;
+  }
+
+  const editedSite = normalizeSite({
+    id: idValue || nextSiteId(),
+    type: els.siteTypeInput.value,
+    name,
+    address,
+    distance: valueOrBlank(els.siteDistanceInput),
+    toll: valueOrBlank(els.siteTollInput),
+    fuel: valueOrBlank(els.siteFuelInput),
+    warranty: els.siteWarrantyInput.value,
+    note: els.siteNoteInput.value
+  });
+
+  if (idValue) {
+    sites = sites.map((site) => Number(site.id) === idValue ? editedSite : site);
+  } else {
+    sites = [...sites, editedSite];
+  }
+
+  saveSiteDraft();
+  closeSiteEditor();
+  render();
+  renderSettingsSiteList();
+  updateMeta();
+  toast(idValue ? '현장 정보를 수정했습니다.' : '새 현장을 추가했습니다.');
+}
+
+function deleteCurrentSite() {
+  const id = Number(els.siteIdInput.value || 0);
+  const site = siteById(id);
+  if (!site) return;
+
+  const confirmed = window.confirm(`“${site.name}” 현장을 삭제할까요?\n이 변경은 우선 이 휴대폰에만 저장됩니다.`);
+  if (!confirmed) return;
+
+  sites = sites.filter((item) => Number(item.id) !== id);
+  favorites = favorites.filter((item) => Number(item) !== id);
+  recentVisits = recentVisits.filter((item) => Number(item) !== id);
+  saveStorage();
+  saveSiteDraft();
+  closeSiteEditor();
+  render();
+  renderSettingsSiteList();
+  updateMeta();
+  toast('현장을 삭제했습니다.');
+}
+
+function exportSitesJson() {
+  const today = new Date().toISOString().slice(0, 10);
+  const payload = {
+    meta: {
+      ...officialMeta,
+      version: APP_VERSION,
+      updatedAt: today,
+      sourceFile: '앱 설정에서 편집 후 내보냄',
+      exportedFromSettings: true
+    },
+    sites: sites.map(normalizeSite)
+  };
+
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'sites.json';
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+  toast('sites.json을 내려받았습니다.');
+}
+
+function resetToOfficialSites() {
+  const confirmed = window.confirm(
+    '이 휴대폰에서 추가·수정한 내용을 모두 지우고 GitHub의 공식 현장주소로 되돌릴까요?'
+  );
+  if (!confirmed) return;
+
+  clearSiteDraft();
+  sites = officialSites.map((site) => ({ ...site }));
+  meta = { ...officialMeta };
+  render();
+  renderSettingsSiteList();
+  updateMeta();
+  toast('공식 GitHub 데이터로 되돌렸습니다.');
+}
+
 function isStandalone() {
   return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
 }
@@ -690,8 +971,7 @@ async function installApp() {
 
 function applyDarkMode(enabled) {
   document.body.classList.toggle('dark', enabled);
-  els.darkModeBtn.textContent = enabled ? '☀️' : '🌙';
-  els.darkModeBtn.setAttribute('aria-label', enabled ? '다크모드 끄기' : '다크모드 켜기');
+  if (els.darkModeToggle) els.darkModeToggle.checked = enabled;
   localStorage.setItem(STORAGE_KEYS.darkMode, enabled ? '1' : '0');
 }
 
@@ -746,6 +1026,14 @@ function initEvents() {
 
   document.addEventListener('keydown', (event) => {
     if (event.key !== 'Escape') return;
+    if (els.siteEditorModal && !els.siteEditorModal.hidden) {
+      closeSiteEditor();
+      return;
+    }
+    if (els.settingsModal && !els.settingsModal.hidden) {
+      closeSettings();
+      return;
+    }
     if (els.vehicleAppModal && !els.vehicleAppModal.hidden) {
       closeVehicleAppGuide();
       return;
@@ -753,7 +1041,28 @@ function initEvents() {
     if (els.detailModal.classList.contains('show')) closeDetail();
   });
 
-  els.darkModeBtn.addEventListener('click', () => applyDarkMode(!document.body.classList.contains('dark')));
+  els.settingsBtn?.addEventListener('click', openSettings);
+  els.closeSettingsBtn?.addEventListener('click', closeSettings);
+  els.settingsModal?.addEventListener('click', (event) => {
+    if (event.target === els.settingsModal) closeSettings();
+  });
+  els.darkModeToggle?.addEventListener('change', () => applyDarkMode(els.darkModeToggle.checked));
+  els.addSiteBtn?.addEventListener('click', () => openSiteEditor());
+  els.settingsSiteSearch?.addEventListener('input', renderSettingsSiteList);
+  els.settingsSiteList?.addEventListener('click', (event) => {
+    const button = event.target.closest('[data-edit-site-id]');
+    if (!button) return;
+    openSiteEditor(Number(button.dataset.editSiteId));
+  });
+  els.closeSiteEditorBtn?.addEventListener('click', closeSiteEditor);
+  els.siteEditorModal?.addEventListener('click', (event) => {
+    if (event.target === els.siteEditorModal) closeSiteEditor();
+  });
+  els.siteEditorForm?.addEventListener('submit', saveSiteFromForm);
+  els.deleteSiteBtn?.addEventListener('click', deleteCurrentSite);
+  els.exportSitesBtn?.addEventListener('click', exportSitesJson);
+  els.resetSitesBtn?.addEventListener('click', resetToOfficialSites);
+
   els.refreshBtn.addEventListener('click', loadData);
   els.installBtn.addEventListener('click', installApp);
   if (!window.__TEA_KAKAO_INLINE_BOUND__) {
@@ -780,7 +1089,7 @@ function registerServiceWorker() {
 
   window.addEventListener('load', async () => {
     try {
-      const registration = await navigator.serviceWorker.register('./service-worker.js?v=3.5.6', {
+      const registration = await navigator.serviceWorker.register('./service-worker.js?v=3.5.7', {
         scope: './',
         updateViaCache: 'none'
       });
