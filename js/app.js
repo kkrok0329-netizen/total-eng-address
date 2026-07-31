@@ -1,25 +1,21 @@
 'use strict';
 
-const APP_VERSION = 'V3.5.7';
+const APP_VERSION = 'V3.6.0';
+const API_URL = 'https://script.google.com/macros/s/AKfycbyF2FyCA9Qqbqi90BCD-jE_LE_e-og2ty5sBOSgxVWydSCiB9fv3qOpmNpwsUlVxR54/exec';
 const STORAGE_KEYS = {
   favorites: 'tea_favorites',
   recentVisits: 'tea_recentVisits',
   recentSearches: 'tea_recentSearches',
-  darkMode: 'tea_darkMode',
-  siteDraft: 'tea_siteDraft_v1'
+  darkMode: 'tea_darkMode'
 };
 
 let sites = [];
-let officialSites = [];
-let officialMeta = {};
 let meta = {};
-let localDraftActive = false;
 let currentType = 'all';
 let deferredInstallPrompt = null;
 let favorites = readStoredArray(STORAGE_KEYS.favorites);
 let recentVisits = readStoredArray(STORAGE_KEYS.recentVisits);
 let recentSearches = readStoredArray(STORAGE_KEYS.recentSearches);
-let vehicleAppState = null;
 
 const $ = (id) => document.getElementById(id);
 const els = {
@@ -33,50 +29,23 @@ const els = {
   detailModal: $('detailModal'),
   detailContent: $('detailContent'),
   closeDetailBtn: $('closeDetailBtn'),
-  settingsBtn: $('settingsBtn'),
-  settingsModal: $('settingsModal'),
-  closeSettingsBtn: $('closeSettingsBtn'),
-  darkModeToggle: $('darkModeToggle'),
-  addSiteBtn: $('addSiteBtn'),
-  settingsSiteSearch: $('settingsSiteSearch'),
-  settingsSiteList: $('settingsSiteList'),
-  exportSitesBtn: $('exportSitesBtn'),
-  resetSitesBtn: $('resetSitesBtn'),
-  siteEditorModal: $('siteEditorModal'),
-  closeSiteEditorBtn: $('closeSiteEditorBtn'),
-  siteEditorForm: $('siteEditorForm'),
-  siteEditorTitle: $('siteEditorTitle'),
-  siteIdInput: $('siteIdInput'),
-  siteTypeInput: $('siteTypeInput'),
-  siteNameInput: $('siteNameInput'),
-  siteAddressInput: $('siteAddressInput'),
-  siteDistanceInput: $('siteDistanceInput'),
-  siteTollInput: $('siteTollInput'),
-  siteFuelInput: $('siteFuelInput'),
-  siteWarrantyInput: $('siteWarrantyInput'),
-  siteNoteInput: $('siteNoteInput'),
-  deleteSiteBtn: $('deleteSiteBtn'),
+  darkModeBtn: $('darkModeBtn'),
   toast: $('toast'),
   refreshBtn: $('refreshBtn'),
   installBtn: $('installBtn'),
   versionText: $('versionText'),
-  updatedText: $('updatedText'),
-  kakaoGuide: $('kakaoGuide'),
-  kakaoGuideMessage: $('kakaoGuideMessage'),
-  kakaoAndroidSteps: $('kakaoAndroidSteps'),
-  kakaoIosSteps: $('kakaoIosSteps'),
-  openChromeBtn: $('openChromeBtn'),
-  kakaoAndroidFallback: $('kakaoAndroidFallback'),
-  copyAppLinkBtn: $('copyAppLinkBtn'),
-  continueInKakaoBtn: $('continueInKakaoBtn'),
-  vehicleAppModal: $('vehicleAppModal'),
-  vehicleAppTitle: $('vehicleAppTitle'),
-  vehicleAppMessage: $('vehicleAppMessage'),
-  vehicleAppAddress: $('vehicleAppAddress'),
-  vehicleAppSteps: $('vehicleAppSteps'),
-  openVehicleAppBtn: $('openVehicleAppBtn'),
-  copyVehicleAddressBtn: $('copyVehicleAddressBtn'),
-  closeVehicleAppBtn: $('closeVehicleAppBtn')
+  updatedText: $('updatedText')
+  ,
+  addSiteBtn: $('addSiteBtn'),
+  siteFormModal: $('siteFormModal'),
+  siteForm: $('siteForm'),
+  closeSiteFormBtn: $('closeSiteFormBtn'),
+  cancelSiteFormBtn: $('cancelSiteFormBtn'),
+  saveSiteBtn: $('saveSiteBtn'),
+  siteNameInput: $('siteNameInput'),
+  siteTypeInput: $('siteTypeInput'),
+  siteAddressInput: $('siteAddressInput'),
+  siteNoteInput: $('siteNoteInput')
 };
 
 function readStoredArray(key) {
@@ -93,59 +62,6 @@ function saveStorage() {
   localStorage.setItem(STORAGE_KEYS.favorites, JSON.stringify(favorites));
   localStorage.setItem(STORAGE_KEYS.recentVisits, JSON.stringify(recentVisits));
   localStorage.setItem(STORAGE_KEYS.recentSearches, JSON.stringify(recentSearches));
-}
-
-function normalizeSite(site) {
-  return {
-    id: Number(site?.id) || 0,
-    type: site?.type === 'coupang' ? 'coupang' : 'general',
-    name: String(site?.name || '').trim(),
-    address: String(site?.address || '').trim(),
-    distance: site?.distance === '' || site?.distance === null || site?.distance === undefined
-      ? ''
-      : cleanNumber(site.distance),
-    toll: site?.toll === '' || site?.toll === null || site?.toll === undefined
-      ? ''
-      : cleanNumber(site.toll),
-    fuel: site?.fuel === '' || site?.fuel === null || site?.fuel === undefined
-      ? ''
-      : cleanNumber(site.fuel),
-    note: String(site?.note || '').trim(),
-    warranty: String(site?.warranty || '').trim()
-  };
-}
-
-function readSiteDraft() {
-  try {
-    const parsed = JSON.parse(localStorage.getItem(STORAGE_KEYS.siteDraft) || 'null');
-    if (!parsed || !Array.isArray(parsed.sites)) return null;
-    return {
-      savedAt: parsed.savedAt || '',
-      sites: parsed.sites.map(normalizeSite)
-    };
-  } catch (error) {
-    console.warn('현장 수정본 복구 실패', error);
-    return null;
-  }
-}
-
-function saveSiteDraft() {
-  const savedAt = new Date().toISOString();
-  localStorage.setItem(STORAGE_KEYS.siteDraft, JSON.stringify({
-    savedAt,
-    sites: sites.map(normalizeSite)
-  }));
-  localDraftActive = true;
-  meta = {
-    ...meta,
-    updatedAt: savedAt.slice(0, 10),
-    localDraft: true
-  };
-}
-
-function clearSiteDraft() {
-  localStorage.removeItem(STORAGE_KEYS.siteDraft);
-  localDraftActive = false;
 }
 
 function escapeHtml(value) {
@@ -182,6 +98,23 @@ function totalCostText(site) {
   return cost ? `${cost.toLocaleString('ko-KR')}원` : '-';
 }
 
+function hasTravelInfo(site) {
+  return Boolean(cleanNumber(site.distance) || cleanNumber(site.toll) || cleanNumber(site.fuel));
+}
+
+function regionLabel(value) {
+  if (!value) return '';
+  const text = String(value);
+  if (text.includes('서.경')) return '서울·경기';
+  if (text.includes('지방')) return '지방';
+  return text;
+}
+
+function regionClass(value) {
+  if (!value) return '';
+  return String(value).includes('지방') ? 'region-local' : 'region-capital';
+}
+
 function siteById(id) {
   const numericId = Number(id);
   return sites.find((site) => Number(site.id) === numericId);
@@ -190,31 +123,33 @@ function siteById(id) {
 async function loadData() {
   try {
     setLoading('불러오는 중...');
-    const response = await fetch('./data/sites.json', { cache: 'no-cache' });
-    if (!response.ok) throw new Error('sites.json을 찾을 수 없습니다.');
+    let data;
 
-    const data = await response.json();
-    officialMeta = data.meta || {};
-    meta = { ...officialMeta };
-    officialSites = Array.isArray(data.sites) ? data.sites.map(normalizeSite) : [];
-
-    const draft = readSiteDraft();
-    if (draft) {
-      sites = draft.sites;
-      localDraftActive = true;
-      meta = {
-        ...meta,
-        updatedAt: draft.savedAt ? draft.savedAt.slice(0, 10) : meta.updatedAt,
-        localDraft: true
-      };
-    } else {
-      sites = officialSites.map((site) => ({ ...site }));
-      localDraftActive = false;
+    try {
+      const apiResponse = await fetch(`${API_URL}?action=sites&_=${Date.now()}`, { cache: 'no-store' });
+      if (!apiResponse.ok) throw new Error('Google Sheets 연결 실패');
+      data = await apiResponse.json();
+      if (!data.success || !Array.isArray(data.sites)) {
+        throw new Error(data.error || '현장 데이터 형식 오류');
+      }
+    } catch (apiError) {
+      console.warn('Google Sheets 데이터를 불러오지 못해 백업 데이터를 사용합니다.', apiError);
+      const backupResponse = await fetch('./data/sites.json', { cache: 'no-cache' });
+      if (!backupResponse.ok) throw new Error('백업 데이터도 불러오지 못했습니다.');
+      data = await backupResponse.json();
+      data.meta = { ...(data.meta || {}), source: '내장 백업' };
+      toast('오프라인 백업 데이터를 표시합니다.');
     }
+
+    meta = data.meta || {};
+    sites = (Array.isArray(data.sites) ? data.sites : []).map((site) => ({
+      ...site,
+      id: Number(site.id),
+      type: site.type === 'coupang' ? 'coupang' : 'general'
+    }));
 
     updateMeta();
     render();
-    renderSettingsSiteList();
   } catch (error) {
     console.error(error);
     els.siteList.innerHTML = '';
@@ -235,11 +170,7 @@ function setLoading(text) {
 function updateMeta() {
   if (els.headerCount) els.headerCount.textContent = `${sites.length}개 현장`;
   if (els.versionText) els.versionText.textContent = APP_VERSION;
-  if (els.updatedText) {
-    els.updatedText.textContent = localDraftActive
-      ? `내 기기 수정본 ${meta.updatedAt || '-'}`
-      : `업데이트 ${meta.updatedAt || '-'}`;
-  }
+  if (els.updatedText) els.updatedText.textContent = `업데이트 ${meta.updatedAt || '-'}`;
 }
 
 function filteredSites() {
@@ -253,7 +184,7 @@ function filteredSites() {
 
   if (keyword) {
     data = data.filter((site) => (
-      [site.name, site.address, site.note]
+      [site.name, site.address, site.note, site.page, site.region]
         .join(' ')
         .toLowerCase()
         .includes(keyword)
@@ -286,6 +217,7 @@ function render() {
 function siteCard(site) {
   const isCoupang = site.type === 'coupang';
   const isFavorite = favorites.includes(site.id);
+  const region = isCoupang ? regionLabel(site.region || site.page) : '';
   const id = Number(site.id);
 
   return `<article class="site-card" data-action="open-detail" data-id="${id}" tabindex="0" aria-label="${escapeHtml(site.name)} 상세보기">
@@ -295,14 +227,16 @@ function siteCard(site) {
     </div>
     <div class="site-title">${escapeHtml(site.name)}</div>
     <div class="address">📍 ${escapeHtml(site.address)}</div>
-    <div class="info-grid">
+    ${hasTravelInfo(site) ? `<div class="info-grid">
       <div class="info-box"><span>거리</span><strong>${distanceText(site)}</strong></div>
       <div class="info-box"><span>예상비용</span><strong>💰 ${totalCostText(site)}</strong></div>
       <div class="info-box"><span>주유비</span><strong>${money(site.fuel)}</strong></div>
-    </div>
+    </div>` : ''}
     <div class="meta-row">
       ${site.toll ? `<span class="meta-chip">💳 톨비 ${money(site.toll)}</span>` : ''}
       ${site.note ? `<span class="meta-chip">📝 ${escapeHtml(site.note)}</span>` : ''}
+      ${region ? `<span class="meta-chip ${regionClass(region)}">📍 ${escapeHtml(region)}</span>` : ''}
+      ${!isCoupang && site.page ? `<span class="meta-chip">📖 PAGE ${escapeHtml(site.page)}</span>` : ''}
       ${site.warranty ? `<span class="meta-chip">🛡 ${escapeHtml(site.warranty)}</span>` : ''}
     </div>
     <div class="card-buttons">
@@ -310,8 +244,6 @@ function siteCard(site) {
       <button type="button" data-action="map" data-map="tmap" data-id="${id}">🚗 티맵</button>
       <button type="button" data-action="map" data-map="kakao" data-id="${id}">카카오내비</button>
       <button type="button" data-action="map" data-map="naver" data-id="${id}">네이버지도</button>
-      <button type="button" data-action="vehicle-app" data-vehicle-app="hyundai" data-id="${id}">현대차</button>
-      <button type="button" data-action="vehicle-app" data-vehicle-app="kia" data-id="${id}">기아차</button>
     </div>
   </article>`;
 }
@@ -354,19 +286,21 @@ function openDetail(id) {
   saveStorage();
 
   const isCoupang = site.type === 'coupang';
+  const region = isCoupang ? regionLabel(site.region || site.page) : '';
 
   els.detailContent.innerHTML = `<span class="type-badge ${isCoupang ? 'coupang' : ''}">${isCoupang ? '📦 쿠팡' : '🏗️ 일반현장'}</span>
     <div class="detail-title">${escapeHtml(site.name)}</div>
     <div class="detail-address">📍 ${escapeHtml(site.address)}</div>
-    <div class="info-grid">
+    ${hasTravelInfo(site) ? `<div class="info-grid">
       <div class="info-box"><span>거리</span><strong>${distanceText(site)}</strong></div>
       <div class="info-box"><span>톨비</span><strong>${money(site.toll)}</strong></div>
       <div class="info-box"><span>주유비</span><strong>${money(site.fuel)}</strong></div>
     </div>
-    <div class="info-grid detail-summary-grid">
+    <div class="info-grid">
       <div class="info-box"><span>예상비용</span><strong>💰 ${totalCostText(site)}</strong></div>
       <div class="info-box"><span>구분</span><strong>${isCoupang ? '쿠팡' : '일반'}</strong></div>
-    </div>
+      <div class="info-box"><span>${isCoupang ? '지역' : 'PAGE'}</span><strong>${escapeHtml(isCoupang ? (region || '-') : (site.page || '-'))}</strong></div>
+    </div>` : ''}
     <div class="meta-row">
       ${site.note ? `<span class="meta-chip">📝 ${escapeHtml(site.note)}</span>` : ''}
       ${site.warranty ? `<span class="meta-chip">🛡 Warranty ${escapeHtml(site.warranty)}</span>` : ''}
@@ -376,8 +310,6 @@ function openDetail(id) {
       <button class="btn-tmap" type="button" data-action="map" data-map="tmap" data-id="${numericId}">🚗 티맵</button>
       <button class="btn-kakao" type="button" data-action="map" data-map="kakao" data-id="${numericId}">카카오내비</button>
       <button class="btn-naver" type="button" data-action="map" data-map="naver" data-id="${numericId}">네이버지도</button>
-      <button class="btn-hyundai" type="button" data-action="vehicle-app" data-vehicle-app="hyundai" data-id="${numericId}">현대차</button>
-      <button class="btn-kia" type="button" data-action="vehicle-app" data-vehicle-app="kia" data-id="${numericId}">기아차</button>
     </div>`;
 
   els.detailModal.classList.add('show');
@@ -388,6 +320,69 @@ function openDetail(id) {
 function closeDetail() {
   els.detailModal.classList.remove('show');
   els.detailModal.setAttribute('aria-hidden', 'true');
+}
+
+function openSiteForm() {
+  els.siteForm.reset();
+  els.siteTypeInput.value = 'general';
+  els.siteFormModal.classList.add('show');
+  els.siteFormModal.setAttribute('aria-hidden', 'false');
+  document.body.classList.add('modal-open');
+  window.setTimeout(() => els.siteNameInput.focus(), 50);
+}
+
+function closeSiteForm() {
+  if (els.saveSiteBtn.disabled) return;
+  els.siteFormModal.classList.remove('show');
+  els.siteFormModal.setAttribute('aria-hidden', 'true');
+  document.body.classList.remove('modal-open');
+}
+
+async function saveSite(event) {
+  event.preventDefault();
+
+  const name = els.siteNameInput.value.trim();
+  const address = els.siteAddressInput.value.trim();
+  if (!name || !address) {
+    toast('현장명과 주소를 입력해 주세요.');
+    return;
+  }
+
+  els.saveSiteBtn.disabled = true;
+  els.saveSiteBtn.textContent = '등록 중...';
+
+  try {
+    const response = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({
+        action: 'saveSite',
+        site: {
+          name,
+          type: els.siteTypeInput.value,
+          address,
+          note: els.siteNoteInput.value.trim()
+        }
+      })
+    });
+
+    if (!response.ok) throw new Error('등록 서버에 연결하지 못했습니다.');
+    const result = await response.json();
+    if (!result.success) throw new Error(result.error || '현장 등록에 실패했습니다.');
+
+    els.siteFormModal.classList.remove('show');
+    els.siteFormModal.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('modal-open');
+    els.searchInput.value = name;
+    await loadData();
+    toast('현장이 등록되었습니다.');
+  } catch (error) {
+    console.error(error);
+    toast(error.message || '현장 등록에 실패했습니다.');
+  } finally {
+    els.saveSiteBtn.disabled = false;
+    els.saveSiteBtn.textContent = '등록하기';
+  }
 }
 
 function toast(message) {
@@ -418,172 +413,23 @@ async function copyAddress(id) {
   }
 }
 
-function openTmap(site) {
-  const destination = String(site.address || site.name || '').trim();
-  if (!destination) {
-    toast('목적지 주소가 없습니다.');
-    return;
-  }
-
-  const query = encodeURIComponent(destination);
-  toast('티맵을 여는 중입니다.');
-
-  // Android Chrome·삼성 인터넷에서는 intent 주소로 TMAP 앱을 직접 엽니다.
-  // 앱이 설치되어 있지 않으면 Google Play의 TMAP 설치 화면으로 이동합니다.
-  if (isAndroid()) {
-    const playStoreUrl = encodeURIComponent(
-      'https://play.google.com/store/apps/details?id=com.skt.tmap.ku'
-    );
-    window.location.href = `intent://search?name=${query}#Intent;scheme=tmap;package=com.skt.tmap.ku;S.browser_fallback_url=${playStoreUrl};end`;
-    return;
-  }
-
-  // iPhone·iPad에서는 TMAP의 앱 호출 주소를 사용합니다.
-  // 앱이 없을 때는 설치 여부를 묻고 App Store로 연결합니다.
-  if (isIos()) {
-    let appOpened = false;
-    let fallbackTimer = null;
-
-    const handleVisibilityChange = () => {
-      if (document.hidden) {
-        appOpened = true;
-        window.clearTimeout(fallbackTimer);
-        document.removeEventListener('visibilitychange', handleVisibilityChange);
-      }
-    };
-
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    window.location.href = `tmap://search?name=${query}`;
-
-    fallbackTimer = window.setTimeout(() => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-      if (!appOpened && !document.hidden) {
-        const openStore = window.confirm(
-          '티맵 앱이 열리지 않았습니다. App Store에서 티맵을 확인할까요?'
-        );
-        if (openStore) {
-          window.location.href = 'https://apps.apple.com/kr/app/id431589174';
-        }
-      }
-    }, 1800);
-    return;
-  }
-
-  toast('티맵은 스마트폰에서 열어 주세요.');
-}
-
-
-const VEHICLE_APPS = {
-  hyundai: {
-    name: '마이현대',
-    shortName: '현대차',
-    androidPackage: 'com.hyundai.oneapp.kr',
-    playStoreUrl: 'https://play.google.com/store/apps/details?id=com.hyundai.oneapp.kr',
-    appStoreUrl: 'https://apps.apple.com/kr/app/id6714472723'
-  },
-  kia: {
-    name: 'Kia App',
-    shortName: '기아차',
-    androidPackage: 'com.kia.oneapp.kr',
-    playStoreUrl: 'https://play.google.com/store/apps/details?id=com.kia.oneapp.kr',
-    appStoreUrl: 'https://apps.apple.com/kr/app/id6590612538'
-  }
-};
-
-async function copyText(value) {
-  try {
-    await navigator.clipboard.writeText(value);
-    return true;
-  } catch (error) {
-    const textarea = document.createElement('textarea');
-    textarea.value = value;
-    textarea.setAttribute('readonly', '');
-    textarea.style.position = 'fixed';
-    textarea.style.opacity = '0';
-    document.body.appendChild(textarea);
-    textarea.select();
-    const copied = document.execCommand('copy');
-    textarea.remove();
-    return copied;
-  }
-}
-
-async function openVehicleAppGuide(id, type) {
-  const site = siteById(id);
-  const config = VEHICLE_APPS[type];
-  if (!site || !config || !els.vehicleAppModal) return;
-
-  vehicleAppState = { site, type, config };
-  const copied = await copyText(site.address);
-
-  els.vehicleAppTitle.textContent = `${config.name}로 보내기`;
-  els.vehicleAppMessage.textContent = copied
-    ? '현장주소를 복사해 두었습니다.'
-    : '아래 주소를 길게 눌러 복사해 주세요.';
-  els.vehicleAppAddress.textContent = site.address;
-  els.vehicleAppSteps.innerHTML = `
-    <li><strong>${config.name}</strong> 앱을 여세요.</li>
-    <li>지도 또는 목적지 검색창을 길게 눌러 <strong>붙여넣기</strong> 하세요.</li>
-    <li>차량 연동 메뉴에서 <strong>차량으로 전송</strong>을 선택하세요.</li>`;
-
-  if (isAndroid()) {
-    els.openVehicleAppBtn.textContent = `${config.name} 앱 열기`;
-  } else if (isIos()) {
-    els.openVehicleAppBtn.textContent = `${config.name} App Store에서 열기`;
-  } else {
-    els.openVehicleAppBtn.textContent = `${config.name} 설치 페이지 열기`;
-  }
-
-  els.vehicleAppModal.hidden = false;
-  els.vehicleAppModal.setAttribute('aria-hidden', 'false');
-  document.body.classList.add('vehicle-app-open');
-  window.setTimeout(() => els.openVehicleAppBtn?.focus(), 50);
-}
-
-function closeVehicleAppGuide() {
-  if (!els.vehicleAppModal) return;
-  els.vehicleAppModal.hidden = true;
-  els.vehicleAppModal.setAttribute('aria-hidden', 'true');
-  document.body.classList.remove('vehicle-app-open');
-  vehicleAppState = null;
-}
-
-async function copyVehicleAddress() {
-  if (!vehicleAppState) return;
-  const copied = await copyText(vehicleAppState.site.address);
-  toast(copied ? '현장주소를 다시 복사했습니다.' : '주소 복사에 실패했습니다.');
-}
-
-function launchVehicleApp() {
-  if (!vehicleAppState) return;
-  const { config } = vehicleAppState;
-
-  if (isAndroid()) {
-    const fallbackUrl = encodeURIComponent(config.playStoreUrl);
-    window.location.href = `intent:#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;package=${config.androidPackage};S.browser_fallback_url=${fallbackUrl};end`;
-    return;
-  }
-
-  if (isIos()) {
-    // 현대·기아 앱은 공개된 웹 딥링크가 확인되지 않아 App Store 페이지로 연결합니다.
-    // 앱이 설치되어 있으면 App Store의 “열기” 버튼을 눌러 실행할 수 있습니다.
-    window.location.href = config.appStoreUrl;
-    return;
-  }
-
-  window.open(config.playStoreUrl, '_blank', 'noopener,noreferrer');
-}
-
 function openMap(id, type) {
   const site = siteById(id);
   if (!site) return;
 
+  const query = encodeURIComponent(site.address);
   if (type === 'tmap') {
-    openTmap(site);
+    const fallback = window.setTimeout(() => {
+      const opened = window.open(`https://www.google.com/search?q=${query}+티맵`, '_blank');
+      if (opened) opened.opener = null;
+    }, 1200);
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) window.clearTimeout(fallback);
+    }, { once: true });
+    window.location.href = `tmap://search?name=${query}`;
     return;
   }
 
-  const query = encodeURIComponent(site.address);
   const urls = {
     naver: `https://map.naver.com/v5/search/${query}`,
     kakao: `https://map.kakao.com/link/search/${query}`
@@ -625,197 +471,9 @@ function handleAction(event) {
     return;
   }
 
-  if (action === 'vehicle-app') {
-    event.stopPropagation();
-    openVehicleAppGuide(id, actionTarget.dataset.vehicleApp);
-    return;
-  }
-
   if (action === 'open-detail') {
     openDetail(id);
   }
-}
-
-
-function openSettings() {
-  if (!els.settingsModal) return;
-  closeDetail();
-  els.settingsModal.hidden = false;
-  els.settingsModal.setAttribute('aria-hidden', 'false');
-  document.body.classList.add('settings-open');
-  if (els.darkModeToggle) {
-    els.darkModeToggle.checked = document.body.classList.contains('dark');
-  }
-  if (els.settingsSiteSearch) els.settingsSiteSearch.value = '';
-  renderSettingsSiteList();
-  window.setTimeout(() => els.addSiteBtn?.focus(), 40);
-}
-
-function closeSettings() {
-  if (!els.settingsModal) return;
-  els.settingsModal.hidden = true;
-  els.settingsModal.setAttribute('aria-hidden', 'true');
-  document.body.classList.remove('settings-open');
-}
-
-function renderSettingsSiteList() {
-  if (!els.settingsSiteList) return;
-  const keyword = String(els.settingsSiteSearch?.value || '').trim().toLowerCase();
-  const filtered = sites.filter((site) => {
-    if (!keyword) return true;
-    return `${site.name} ${site.address}`.toLowerCase().includes(keyword);
-  });
-
-  if (!filtered.length) {
-    els.settingsSiteList.innerHTML = '<div class="settings-empty">해당 현장을 찾을 수 없습니다.</div>';
-    return;
-  }
-
-  els.settingsSiteList.innerHTML = filtered.map((site) => `
-    <div class="settings-site-item">
-      <button class="settings-site-edit" type="button" data-edit-site-id="${Number(site.id)}">
-        <span class="settings-site-type">${site.type === 'coupang' ? '쿠팡' : '일반'}</span>
-        <strong>${escapeHtml(site.name)}</strong>
-        <small>${escapeHtml(site.address)}</small>
-      </button>
-    </div>`).join('');
-}
-
-function nextSiteId() {
-  return sites.reduce((maxId, site) => Math.max(maxId, Number(site.id) || 0), 0) + 1;
-}
-
-function valueOrBlank(input) {
-  const value = String(input?.value || '').trim();
-  return value === '' ? '' : cleanNumber(value);
-}
-
-function openSiteEditor(id = null) {
-  if (!els.siteEditorModal || !els.siteEditorForm) return;
-  const site = id === null ? null : siteById(id);
-
-  els.siteEditorForm.reset();
-  els.siteIdInput.value = site ? String(site.id) : '';
-  els.siteTypeInput.value = site?.type === 'coupang' ? 'coupang' : 'general';
-  els.siteNameInput.value = site?.name || '';
-  els.siteAddressInput.value = site?.address || '';
-  els.siteDistanceInput.value = site?.distance ?? '';
-  els.siteTollInput.value = site?.toll ?? '';
-  els.siteFuelInput.value = site?.fuel ?? '';
-  els.siteWarrantyInput.value = site?.warranty || '';
-  els.siteNoteInput.value = site?.note || '';
-  els.siteEditorTitle.textContent = site ? '현장 수정' : '현장 추가';
-  els.deleteSiteBtn.hidden = !site;
-
-  els.siteEditorModal.hidden = false;
-  els.siteEditorModal.setAttribute('aria-hidden', 'false');
-  document.body.classList.add('site-editor-open');
-  window.setTimeout(() => els.siteNameInput?.focus(), 40);
-}
-
-function closeSiteEditor() {
-  if (!els.siteEditorModal) return;
-  els.siteEditorModal.hidden = true;
-  els.siteEditorModal.setAttribute('aria-hidden', 'true');
-  document.body.classList.remove('site-editor-open');
-}
-
-function saveSiteFromForm(event) {
-  event.preventDefault();
-
-  const idValue = Number(els.siteIdInput.value || 0);
-  const name = String(els.siteNameInput.value || '').trim();
-  const address = String(els.siteAddressInput.value || '').trim();
-
-  if (!name || !address) {
-    toast('현장명과 주소를 입력해 주세요.');
-    return;
-  }
-
-  const editedSite = normalizeSite({
-    id: idValue || nextSiteId(),
-    type: els.siteTypeInput.value,
-    name,
-    address,
-    distance: valueOrBlank(els.siteDistanceInput),
-    toll: valueOrBlank(els.siteTollInput),
-    fuel: valueOrBlank(els.siteFuelInput),
-    warranty: els.siteWarrantyInput.value,
-    note: els.siteNoteInput.value
-  });
-
-  if (idValue) {
-    sites = sites.map((site) => Number(site.id) === idValue ? editedSite : site);
-  } else {
-    sites = [...sites, editedSite];
-  }
-
-  saveSiteDraft();
-  closeSiteEditor();
-  render();
-  renderSettingsSiteList();
-  updateMeta();
-  toast(idValue ? '현장 정보를 수정했습니다.' : '새 현장을 추가했습니다.');
-}
-
-function deleteCurrentSite() {
-  const id = Number(els.siteIdInput.value || 0);
-  const site = siteById(id);
-  if (!site) return;
-
-  const confirmed = window.confirm(`“${site.name}” 현장을 삭제할까요?\n이 변경은 우선 이 휴대폰에만 저장됩니다.`);
-  if (!confirmed) return;
-
-  sites = sites.filter((item) => Number(item.id) !== id);
-  favorites = favorites.filter((item) => Number(item) !== id);
-  recentVisits = recentVisits.filter((item) => Number(item) !== id);
-  saveStorage();
-  saveSiteDraft();
-  closeSiteEditor();
-  render();
-  renderSettingsSiteList();
-  updateMeta();
-  toast('현장을 삭제했습니다.');
-}
-
-function exportSitesJson() {
-  const today = new Date().toISOString().slice(0, 10);
-  const payload = {
-    meta: {
-      ...officialMeta,
-      version: APP_VERSION,
-      updatedAt: today,
-      sourceFile: '앱 설정에서 편집 후 내보냄',
-      exportedFromSettings: true
-    },
-    sites: sites.map(normalizeSite)
-  };
-
-  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json;charset=utf-8' });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = 'sites.json';
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-  window.setTimeout(() => URL.revokeObjectURL(url), 1000);
-  toast('sites.json을 내려받았습니다.');
-}
-
-function resetToOfficialSites() {
-  const confirmed = window.confirm(
-    '이 휴대폰에서 추가·수정한 내용을 모두 지우고 GitHub의 공식 현장주소로 되돌릴까요?'
-  );
-  if (!confirmed) return;
-
-  clearSiteDraft();
-  sites = officialSites.map((site) => ({ ...site }));
-  meta = { ...officialMeta };
-  render();
-  renderSettingsSiteList();
-  updateMeta();
-  toast('공식 GitHub 데이터로 되돌렸습니다.');
 }
 
 function isStandalone() {
@@ -823,115 +481,12 @@ function isStandalone() {
 }
 
 function isIos() {
-  const userAgent = window.navigator.userAgent || '';
-  const iPadDesktopMode = window.navigator.platform === 'MacIntel'
-    && window.navigator.maxTouchPoints > 1;
-  return /iphone|ipad|ipod/i.test(userAgent) || iPadDesktopMode;
-}
-
-function isAndroid() {
-  return /android/i.test(window.navigator.userAgent);
-}
-
-function isKakaoInAppBrowser() {
-  if (window.__TEA_KAKAO_CONTEXT__ === true) return true;
-
-  const userAgent = window.navigator.userAgent || '';
-  const params = new URLSearchParams(window.location.search);
-  return /KAKAOTALK|KakaoTalk/i.test(userAgent)
-    || params.get('from') === 'kakao'
-    || params.get('kakao') === '1';
-}
-
-function showKakaoGuide() {
-  if (typeof window.__TEA_SHOW_KAKAO_GUIDE__ === 'function') {
-    window.__TEA_SHOW_KAKAO_GUIDE__();
-    return;
-  }
-
-  if (!els.kakaoGuide || isStandalone()) return;
-
-  const ios = isIos();
-  els.kakaoGuide.hidden = false;
-  els.kakaoGuide.setAttribute('aria-hidden', 'false');
-  document.body.classList.add('kakao-guide-open');
-
-  if (els.kakaoAndroidSteps) els.kakaoAndroidSteps.hidden = ios;
-  if (els.kakaoIosSteps) els.kakaoIosSteps.hidden = !ios;
-  if (els.openChromeBtn) els.openChromeBtn.hidden = ios || !isAndroid();
-  if (els.kakaoAndroidFallback) els.kakaoAndroidFallback.hidden = ios || !isAndroid();
-
-  if (els.kakaoGuideMessage) {
-    els.kakaoGuideMessage.textContent = ios
-      ? 'Safari에서 열면 홈 화면에 앱으로 추가할 수 있어요.'
-      : '아래 버튼을 누르면 Chrome에서 설치할 수 있어요.';
-  }
-
-  window.setTimeout(() => {
-    const focusTarget = ios ? els.copyAppLinkBtn : els.openChromeBtn;
-    focusTarget?.focus();
-  }, 50);
-}
-
-function hideKakaoGuide() {
-  if (typeof window.__TEA_HIDE_KAKAO_GUIDE__ === 'function') {
-    window.__TEA_HIDE_KAKAO_GUIDE__();
-    return;
-  }
-
-  if (!els.kakaoGuide) return;
-  els.kakaoGuide.hidden = true;
-  els.kakaoGuide.setAttribute('aria-hidden', 'true');
-  document.body.classList.remove('kakao-guide-open');
-}
-
-function openInChrome() {
-  const currentUrl = typeof window.__TEA_CLEAN_APP_URL__ === 'function'
-    ? window.__TEA_CLEAN_APP_URL__()
-    : window.location.href;
-
-  if (!isAndroid()) {
-    copyCurrentAppLink();
-    return;
-  }
-
-  const protocol = window.location.protocol.replace(':', '') || 'https';
-  const path = `${window.location.host}${window.location.pathname}${window.location.search}${window.location.hash}`;
-  const fallbackUrl = encodeURIComponent(currentUrl);
-  window.location.href = `intent://${path}#Intent;scheme=${protocol};package=com.android.chrome;S.browser_fallback_url=${fallbackUrl};end`;
-}
-
-async function copyCurrentAppLink() {
-  const currentUrl = typeof window.__TEA_CLEAN_APP_URL__ === 'function'
-    ? window.__TEA_CLEAN_APP_URL__()
-    : window.location.href;
-
-  try {
-    await navigator.clipboard.writeText(currentUrl);
-    toast('앱 주소를 복사했습니다.');
-  } catch (error) {
-    const textarea = document.createElement('textarea');
-    textarea.value = currentUrl;
-    textarea.setAttribute('readonly', '');
-    textarea.style.position = 'fixed';
-    textarea.style.opacity = '0';
-    document.body.appendChild(textarea);
-    textarea.select();
-    const copied = document.execCommand('copy');
-    textarea.remove();
-    toast(copied ? '앱 주소를 복사했습니다.' : '주소를 길게 눌러 복사해 주세요.');
-  }
+  return /iphone|ipad|ipod/i.test(window.navigator.userAgent);
 }
 
 function updateInstallButton() {
   if (isStandalone()) {
     els.installBtn.hidden = true;
-    return;
-  }
-
-  if (isKakaoInAppBrowser()) {
-    els.installBtn.textContent = '설치안내';
-    els.installBtn.hidden = false;
     return;
   }
 
@@ -948,11 +503,6 @@ function updateInstallButton() {
 }
 
 async function installApp() {
-  if (isKakaoInAppBrowser()) {
-    showKakaoGuide();
-    return;
-  }
-
   if (deferredInstallPrompt) {
     deferredInstallPrompt.prompt();
     await deferredInstallPrompt.userChoice;
@@ -971,7 +521,8 @@ async function installApp() {
 
 function applyDarkMode(enabled) {
   document.body.classList.toggle('dark', enabled);
-  if (els.darkModeToggle) els.darkModeToggle.checked = enabled;
+  els.darkModeBtn.textContent = enabled ? '☀️' : '🌙';
+  els.darkModeBtn.setAttribute('aria-label', enabled ? '다크모드 끄기' : '다크모드 켜기');
   localStorage.setItem(STORAGE_KEYS.darkMode, enabled ? '1' : '0');
 }
 
@@ -1016,60 +567,25 @@ function initEvents() {
   els.detailModal.addEventListener('click', (event) => {
     if (event.target === els.detailModal) closeDetail();
   });
-
-  els.openVehicleAppBtn?.addEventListener('click', launchVehicleApp);
-  els.copyVehicleAddressBtn?.addEventListener('click', copyVehicleAddress);
-  els.closeVehicleAppBtn?.addEventListener('click', closeVehicleAppGuide);
-  els.vehicleAppModal?.addEventListener('click', (event) => {
-    if (event.target === els.vehicleAppModal) closeVehicleAppGuide();
-  });
-
   document.addEventListener('keydown', (event) => {
     if (event.key !== 'Escape') return;
-    if (els.siteEditorModal && !els.siteEditorModal.hidden) {
-      closeSiteEditor();
-      return;
-    }
-    if (els.settingsModal && !els.settingsModal.hidden) {
-      closeSettings();
-      return;
-    }
-    if (els.vehicleAppModal && !els.vehicleAppModal.hidden) {
-      closeVehicleAppGuide();
+    if (els.siteFormModal.classList.contains('show')) {
+      closeSiteForm();
       return;
     }
     if (els.detailModal.classList.contains('show')) closeDetail();
   });
 
-  els.settingsBtn?.addEventListener('click', openSettings);
-  els.closeSettingsBtn?.addEventListener('click', closeSettings);
-  els.settingsModal?.addEventListener('click', (event) => {
-    if (event.target === els.settingsModal) closeSettings();
-  });
-  els.darkModeToggle?.addEventListener('change', () => applyDarkMode(els.darkModeToggle.checked));
-  els.addSiteBtn?.addEventListener('click', () => openSiteEditor());
-  els.settingsSiteSearch?.addEventListener('input', renderSettingsSiteList);
-  els.settingsSiteList?.addEventListener('click', (event) => {
-    const button = event.target.closest('[data-edit-site-id]');
-    if (!button) return;
-    openSiteEditor(Number(button.dataset.editSiteId));
-  });
-  els.closeSiteEditorBtn?.addEventListener('click', closeSiteEditor);
-  els.siteEditorModal?.addEventListener('click', (event) => {
-    if (event.target === els.siteEditorModal) closeSiteEditor();
-  });
-  els.siteEditorForm?.addEventListener('submit', saveSiteFromForm);
-  els.deleteSiteBtn?.addEventListener('click', deleteCurrentSite);
-  els.exportSitesBtn?.addEventListener('click', exportSitesJson);
-  els.resetSitesBtn?.addEventListener('click', resetToOfficialSites);
-
+  els.darkModeBtn.addEventListener('click', () => applyDarkMode(!document.body.classList.contains('dark')));
   els.refreshBtn.addEventListener('click', loadData);
   els.installBtn.addEventListener('click', installApp);
-  if (!window.__TEA_KAKAO_INLINE_BOUND__) {
-    els.openChromeBtn?.addEventListener('click', openInChrome);
-    els.copyAppLinkBtn?.addEventListener('click', copyCurrentAppLink);
-    els.continueInKakaoBtn?.addEventListener('click', hideKakaoGuide);
-  }
+  els.addSiteBtn.addEventListener('click', openSiteForm);
+  els.closeSiteFormBtn.addEventListener('click', closeSiteForm);
+  els.cancelSiteFormBtn.addEventListener('click', closeSiteForm);
+  els.siteForm.addEventListener('submit', saveSite);
+  els.siteFormModal.addEventListener('click', (event) => {
+    if (event.target === els.siteFormModal) closeSiteForm();
+  });
 
   window.addEventListener('beforeinstallprompt', (event) => {
     event.preventDefault();
@@ -1089,10 +605,7 @@ function registerServiceWorker() {
 
   window.addEventListener('load', async () => {
     try {
-      const registration = await navigator.serviceWorker.register('./service-worker.js?v=3.5.7', {
-        scope: './',
-        updateViaCache: 'none'
-      });
+      const registration = await navigator.serviceWorker.register('./service-worker.js', { scope: './' });
       registration.update().catch(() => {});
     } catch (error) {
       console.warn('서비스 워커 등록 실패', error);
@@ -1106,7 +619,6 @@ function initialize() {
   initEvents();
   registerServiceWorker();
   updateInstallButton();
-  if (isKakaoInAppBrowser()) showKakaoGuide();
   loadData();
 }
 

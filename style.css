@@ -8,137 +8,28 @@ button:focus-visible,input:focus-visible,.site-card:focus-visible{outline:3px so
 body.dark .favorite-chip,body.dark .close-detail,body.dark .search-box button{background:#252e3e;color:#fff}
 @media(display-mode:standalone){body{overscroll-behavior-y:none}}
 
-/* V3.5.2: 스마트폰에서 더 많은 현장을 한 화면에 볼 수 있도록 카드 높이를 축소 */
-.site-card{border-radius:19px;padding:12px 13px;margin-bottom:10px;box-shadow:0 7px 20px rgba(0,0,0,.07)}
-.card-head{min-height:32px}
-.type-badge{padding:5px 9px;font-size:11px;gap:4px}
-.favorite-btn{width:34px;height:34px;font-size:19px}
-.site-title{margin-top:7px;font-size:20px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.site-card .address{margin-top:5px;font-size:13px;line-height:1.35;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
-.site-card .info-grid{gap:6px;margin-top:9px}
-.site-card .info-box{border-radius:11px;padding:7px 3px}
-.site-card .info-box span{font-size:10px}
-.site-card .info-box strong{margin-top:3px;font-size:11.5px}
-.site-card .meta-row{flex-wrap:nowrap;overflow-x:auto;gap:5px;margin-top:7px;padding-bottom:1px;scrollbar-width:none}
-.site-card .meta-row::-webkit-scrollbar{display:none}
-.site-card .meta-chip{flex:0 0 auto;padding:5px 7px;font-size:10.5px;white-space:nowrap}
-.card-buttons{grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;margin-top:9px}
-.card-buttons button{height:38px;border-radius:10px;font-size:10.5px;padding:0 3px;white-space:nowrap}
-.detail-summary-grid{grid-template-columns:repeat(2,1fr)}
-.detail-box .meta-row{flex-wrap:wrap;overflow:visible}
-@media(max-width:360px){.site-card{padding:11px 12px}.site-title{font-size:18px}.card-buttons button{font-size:9.5px}.site-card .info-box strong{font-size:10.5px}}
-
-
-/* V3.5.4: 카카오톡 설치 안내 화면 유지 */
-.kakao-guide[hidden]{display:none!important}
-.kakao-guide{position:fixed;inset:0;z-index:1200;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(5,18,42,.82);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px)}
-.kakao-guide-card{width:min(100%,400px);max-height:calc(100vh - 36px);overflow:auto;background:#fff;border-radius:27px;padding:24px 20px calc(20px + env(safe-area-inset-bottom,0px));text-align:center;box-shadow:0 24px 70px rgba(0,0,0,.35)}
-.kakao-guide-logo{width:132px;height:auto;margin:0 auto 12px}
-.kakao-guide-label{display:inline-block;padding:7px 11px;border-radius:999px;background:#fff2dc;color:#a85c00;font-size:13px;font-weight:900}
-.kakao-guide h2{margin:14px 0 8px;color:var(--blue);font-size:29px;line-height:1.22;letter-spacing:-1.4px}
-.kakao-guide-message{margin:0;color:#475467;font-size:17px;line-height:1.5;font-weight:700}
-.kakao-guide-steps{margin:18px 0;padding:0;list-style:none;counter-reset:kakao-step;text-align:left}
-.kakao-guide-steps li{position:relative;min-height:48px;margin:9px 0;padding:11px 12px 11px 53px;border-radius:15px;background:#f1f6fd;color:#23324a;font-size:16px;line-height:1.45}
-.kakao-guide-steps li::before{counter-increment:kakao-step;content:counter(kakao-step);position:absolute;left:12px;top:50%;transform:translateY(-50%);display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--blue);color:#fff;font-size:15px;font-weight:900}
-.kakao-primary-btn,.kakao-secondary-btn,.kakao-text-btn{width:100%;border:0;font-weight:900}
-.kakao-primary-btn{min-height:58px;border-radius:16px;background:var(--orange);color:#fff;font-size:20px;box-shadow:0 9px 20px rgba(237,148,20,.28)}
-.kakao-guide-note{margin:8px 4px 2px;color:#667085;font-size:13px;line-height:1.45}
-.kakao-secondary-btn{min-height:52px;margin-top:10px;border-radius:16px;background:#eaf1fb;color:var(--blue);font-size:17px}
-.kakao-text-btn{min-height:46px;margin-top:8px;background:transparent;color:#667085;font-size:15px;text-decoration:underline;text-underline-offset:3px}
-body.kakao-guide-open{overflow:hidden}
-body.dark .kakao-guide-card{background:#1b2230;color:#fff}
-body.dark .kakao-guide h2{color:#8fbaff}
-body.dark .kakao-guide-message,body.dark .kakao-guide-note{color:#d0d5dd}
-body.dark .kakao-guide-steps li{background:#252e3e;color:#f2f4f7}
-body.dark .kakao-secondary-btn{background:#252e3e;color:#fff}
-@media(max-width:360px){.kakao-guide{padding:12px}.kakao-guide-card{padding:20px 15px}.kakao-guide h2{font-size:25px}.kakao-guide-message{font-size:15px}.kakao-guide-steps li{font-size:14px;padding-left:50px}.kakao-primary-btn{font-size:18px}}
-
-/* V3.5.6: 현대차·기아차 앱 버튼 및 차량 전송 안내 */
-:root{--hyundai:#002c5f;--kia:#05141f}
-.card-buttons{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
-.card-buttons button{height:40px;font-size:11px;padding:0 4px}
-.btn-hyundai,.card-buttons button:nth-child(5){background:var(--hyundai)}
-.btn-kia,.card-buttons button:nth-child(6){background:var(--kia)}
-.detail-buttons{grid-template-columns:repeat(2,minmax(0,1fr))}
-
-.vehicle-app-modal[hidden]{display:none!important}
-.vehicle-app-modal{position:fixed;inset:0;z-index:1300;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(5,18,42,.82);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px)}
-.vehicle-app-card{position:relative;width:min(100%,400px);max-height:calc(100vh - 36px);overflow:auto;background:#fff;border-radius:27px;padding:25px 20px calc(20px + env(safe-area-inset-bottom,0px));text-align:center;box-shadow:0 24px 70px rgba(0,0,0,.35)}
-.vehicle-app-close{position:absolute;top:13px;right:13px;width:40px;height:40px;border:0;border-radius:50%;background:#eef2f6;color:#344054;font-size:18px;font-weight:900}
-.vehicle-app-label{display:inline-block;margin-top:4px;padding:7px 11px;border-radius:999px;background:#eaf1fb;color:var(--blue);font-size:13px;font-weight:900}
-.vehicle-app-card h2{margin:15px 34px 7px;color:var(--blue);font-size:29px;line-height:1.2;letter-spacing:-1.2px}
-.vehicle-app-message{margin:0;color:#344054;font-size:17px;line-height:1.5;font-weight:900}
-.vehicle-app-address{margin:14px 0;padding:14px;border:2px dashed #a9bdd9;border-radius:15px;background:#f4f8fd;color:#1d2939;font-size:15px;line-height:1.5;font-weight:800;word-break:keep-all}
-.vehicle-app-steps{margin:15px 0;padding:0;list-style:none;counter-reset:vehicle-step;text-align:left}
-.vehicle-app-steps li{position:relative;min-height:46px;margin:8px 0;padding:11px 11px 11px 51px;border-radius:14px;background:#f1f6fd;color:#23324a;font-size:15px;line-height:1.45}
-.vehicle-app-steps li::before{counter-increment:vehicle-step;content:counter(vehicle-step);position:absolute;left:11px;top:50%;transform:translateY(-50%);display:grid;place-items:center;width:29px;height:29px;border-radius:50%;background:var(--blue);color:#fff;font-size:14px;font-weight:900}
-.vehicle-app-note{margin:4px 3px 13px;color:#667085;font-size:12px;line-height:1.45}
-.vehicle-app-primary,.vehicle-app-secondary{width:100%;border:0;border-radius:16px;font-weight:900}
-.vehicle-app-primary{min-height:58px;background:var(--orange);color:#fff;font-size:19px;box-shadow:0 9px 20px rgba(237,148,20,.28)}
-.vehicle-app-secondary{min-height:49px;margin-top:9px;background:#eaf1fb;color:var(--blue);font-size:16px}
-body.vehicle-app-open{overflow:hidden}
-body.dark .vehicle-app-card{background:#1b2230;color:#fff}
-body.dark .vehicle-app-close,body.dark .vehicle-app-secondary{background:#252e3e;color:#fff}
-body.dark .vehicle-app-card h2{color:#8fbaff}
-body.dark .vehicle-app-message,body.dark .vehicle-app-note{color:#d0d5dd}
-body.dark .vehicle-app-address,body.dark .vehicle-app-steps li{background:#252e3e;color:#f2f4f7;border-color:#475467}
-@media(max-width:360px){.card-buttons button{font-size:10px}.vehicle-app-modal{padding:12px}.vehicle-app-card{padding:22px 15px}.vehicle-app-card h2{font-size:25px}.vehicle-app-address{font-size:14px}.vehicle-app-steps li{font-size:14px;padding-left:49px}.vehicle-app-primary{font-size:17px}}
-
-/* V3.5.7: 설정창, 다크모드 토글, 현장주소 추가·수정 */
-.settings-btn{font-size:20px;padding:0;display:grid;place-items:center}
-.settings-modal[hidden],.site-editor-modal[hidden]{display:none!important}
-.settings-modal,.site-editor-modal{position:fixed;inset:0;z-index:1400;display:flex;align-items:flex-end;justify-content:center;background:rgba(5,18,42,.72);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
-.site-editor-modal{z-index:1450}
-.settings-sheet,.site-editor-sheet{width:100%;max-width:430px;max-height:92vh;overflow:auto;background:#f7f9fc;border-radius:28px 28px 0 0;padding:20px 18px calc(24px + env(safe-area-inset-bottom,0px));box-shadow:0 -18px 60px rgba(0,0,0,.25);animation:sheetUp .22s ease}
-.settings-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:15px}
-.settings-head h2{margin:4px 0 0;color:var(--blue);font-size:30px;letter-spacing:-1.3px}
-.settings-label{display:inline-block;padding:6px 10px;border-radius:999px;background:#eaf1fb;color:var(--blue);font-size:12px;font-weight:900}
-.settings-close{width:42px;height:42px;flex:0 0 auto;border:0;border-radius:50%;background:#e9eef5;color:#344054;font-size:18px;font-weight:900}
-.settings-section{margin-top:12px;padding:16px;background:#fff;border:1px solid #e6ebf2;border-radius:20px;box-shadow:0 7px 20px rgba(0,0,0,.05)}
-.settings-row,.settings-section-title{display:flex;align-items:center;justify-content:space-between;gap:12px}
-.settings-row strong,.settings-section-title strong{display:block;color:#1d2939;font-size:17px}
-.settings-row p,.settings-section-title p{margin:4px 0 0;color:#667085;font-size:12px;line-height:1.45}
-.switch{position:relative;display:inline-flex;width:54px;height:31px;flex:0 0 auto}
-.switch input{position:absolute;opacity:0;width:1px;height:1px}
-.switch-slider{position:absolute;inset:0;border-radius:999px;background:#cbd5e1;transition:.2s}
-.switch-slider::after{content:"";position:absolute;left:4px;top:4px;width:23px;height:23px;border-radius:50%;background:#fff;box-shadow:0 2px 7px rgba(0,0,0,.24);transition:.2s}
-.switch input:checked + .switch-slider{background:var(--orange)}
-.switch input:checked + .switch-slider::after{transform:translateX(23px)}
-.settings-primary-small{flex:0 0 auto;border:0;border-radius:12px;background:var(--orange);color:#fff;min-height:42px;padding:0 13px;font-weight:900;font-size:13px}
-.settings-warning{margin-top:13px;padding:12px 13px;border-radius:14px;background:#fff5df;color:#754400;font-size:12px;line-height:1.55}
-.settings-search{display:flex;align-items:center;gap:8px;margin-top:13px;padding:0 12px;height:48px;border:1px solid #d9e1eb;border-radius:14px;background:#f8fafc}
-.settings-search input{width:100%;border:0;outline:0;background:transparent;font-size:14px;color:#1d2939}
-.settings-site-list{margin-top:10px;max-height:340px;overflow:auto;border-top:1px solid #edf0f4}
-.settings-site-item{border-bottom:1px solid #edf0f4}
-.settings-site-edit{width:100%;border:0;background:transparent;text-align:left;padding:12px 4px;display:grid;grid-template-columns:auto 1fr;grid-template-areas:"type name" "type address";column-gap:9px;align-items:center}
-.settings-site-type{grid-area:type;align-self:start;margin-top:2px;min-width:37px;padding:4px 6px;border-radius:999px;background:#eaf1fb;color:var(--blue);font-size:10px;font-weight:900;text-align:center}
-.settings-site-edit strong{grid-area:name;color:#1d2939;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.settings-site-edit small{grid-area:address;color:#667085;font-size:11px;line-height:1.4;margin-top:3px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.settings-empty{padding:24px 10px;text-align:center;color:#667085;font-size:13px}
-.settings-actions{display:grid;gap:9px}
-.settings-export-btn,.settings-reset-btn{width:100%;min-height:52px;border:0;border-radius:15px;font-weight:900;font-size:14px}
-.settings-export-btn{background:var(--blue);color:#fff}
-.settings-reset-btn{background:#edf1f5;color:#475467}
-.site-editor-form{display:grid;gap:13px}
-.site-editor-form label{display:grid;gap:6px}
-.site-editor-form label>span{font-size:13px;font-weight:900;color:#344054}
-.site-editor-form input,.site-editor-form select,.site-editor-form textarea{width:100%;border:1px solid #d5dde7;border-radius:13px;background:#fff;color:#1d2939;padding:12px;font-size:16px;outline:0}
-.site-editor-form textarea{resize:vertical;min-height:82px}
-.site-editor-form input:focus,.site-editor-form select:focus,.site-editor-form textarea:focus{border-color:var(--orange);box-shadow:0 0 0 3px rgba(237,148,20,.16)}
-.site-editor-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.site-editor-actions{display:grid;grid-template-columns:1fr 1.5fr;gap:9px;margin-top:5px}
-.site-delete-btn,.site-save-btn{min-height:54px;border:0;border-radius:15px;font-weight:900;font-size:15px}
-.site-delete-btn{background:#feeceb;color:#b42318}
-.site-save-btn{background:var(--orange);color:#fff}
-.site-delete-btn[hidden]{display:none!important}
-body.settings-open,body.site-editor-open{overflow:hidden}
-body.dark .settings-sheet,body.dark .site-editor-sheet{background:#10141c}
-body.dark .settings-section{background:#1b2230;border-color:#303a4c;color:#fff}
-body.dark .settings-head h2{color:#8fbaff}
-body.dark .settings-close,body.dark .settings-reset-btn{background:#252e3e;color:#fff}
-body.dark .settings-row strong,body.dark .settings-section-title strong,body.dark .settings-site-edit strong,body.dark .site-editor-form label>span{color:#f2f4f7}
-body.dark .settings-row p,body.dark .settings-section-title p,body.dark .settings-site-edit small,body.dark .settings-empty{color:#cbd5e1}
-body.dark .settings-search,body.dark .site-editor-form input,body.dark .site-editor-form select,body.dark .site-editor-form textarea{background:#252e3e;border-color:#475467;color:#fff}
-body.dark .settings-site-list,body.dark .settings-site-item{border-color:#303a4c}
-body.dark .settings-warning{background:#3a2b12;color:#ffe2a8}
-@media(max-width:360px){.settings-sheet,.site-editor-sheet{padding-left:14px;padding-right:14px}.settings-section{padding:14px}.settings-section-title{align-items:flex-start}.settings-primary-small{padding:0 10px;font-size:12px}.site-editor-grid{grid-template-columns:1fr}.settings-head h2{font-size:27px}}
+/* Google Sheets 즉시 등록 */
+.summary-row{gap:10px}
+.summary-actions{display:flex;align-items:center;gap:7px}
+.add-site-btn{border:0;background:var(--orange);color:#fff;font-weight:900;border-radius:999px;padding:9px 12px;box-shadow:0 6px 14px rgba(237,148,20,.22)}
+.form-box{padding-bottom:calc(24px + env(safe-area-inset-bottom,0px))}
+.form-title{margin:6px 48px 4px 0;color:var(--blue);font-size:26px;letter-spacing:-1px}
+.form-description{margin:0 0 20px;color:var(--muted);font-size:13px;font-weight:700}
+.form-field{display:block;margin-top:15px}
+.form-field>span{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;font-size:14px;font-weight:900;color:var(--blue)}
+.form-field b{font-size:11px;color:var(--orange)}
+.form-field em{font-size:11px;color:var(--muted);font-style:normal}
+.form-field input,.form-field select,.form-field textarea{width:100%;border:1px solid #d8e0eb;background:#fff;color:var(--text);border-radius:14px;padding:13px 14px;font-size:16px;outline:0}
+.form-field textarea{resize:vertical;min-height:88px;line-height:1.45}
+.form-field input:focus,.form-field select:focus,.form-field textarea:focus{border-color:var(--orange);box-shadow:0 0 0 3px rgba(237,148,20,.15)}
+.form-actions{display:grid;grid-template-columns:1fr 1.5fr;gap:10px;margin-top:22px}
+.form-actions button{height:50px;border:0;border-radius:15px;font-size:15px;font-weight:900}
+.btn-secondary{background:#eaf1fb;color:var(--blue)}
+.btn-primary{background:var(--orange);color:#fff}
+.btn-primary:disabled{opacity:.55;cursor:wait}
+body.modal-open{overflow:hidden}
+body.dark .form-title,body.dark .form-field>span{color:#9fc6ff}
+body.dark .form-description,body.dark .form-field em{color:#aab3c2}
+body.dark .form-field input,body.dark .form-field select,body.dark .form-field textarea{background:#252e3e;border-color:#3a465a;color:#fff}
+body.dark .btn-secondary{background:#2c3850;color:#cfe2ff}
+@media(max-width:360px){.summary-row{align-items:flex-start}.summary-actions{flex-direction:column;align-items:stretch}.summary-actions button{padding:8px 10px}}

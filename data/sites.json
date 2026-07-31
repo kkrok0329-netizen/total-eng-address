@@ -1,10 +1,10 @@
 {
   "meta": {
-    "version": "V3.5.7",
-    "updatedAt": "2026-07-08",
+    "version": "V3.6.0",
+    "updatedAt": "2026-07-31",
     "sourceFile": "address.xlsx",
-    "generalColumns": "A=NO, B=현장명, C=주소, D=사무실 거리, E=톨비, F=주유비, G=기타, H=Warranty",
-    "coupangColumns": "L=NO, M=현장명, N=주소, O=사무실 거리, P=톨비, Q=주유비, R=기타, S=Warranty"
+    "generalColumns": "B=현장명, C=주소, D=사무실 거리, E=톨비, F=주유비, G=기타, H=Warranty, I=Page",
+    "coupangColumns": "M=NO, N=현장명, O=주소, P=사무실 거리, Q=톨비, R=주유비, S=기타, T=Warranty, U=Page/지역"
   },
   "sites": [
     {
@@ -16,7 +16,9 @@
       "toll": "",
       "fuel": 10461,
       "note": "",
-      "warranty": ""
+      "warranty": "",
+      "page": "1~10",
+      "region": ""
     },
     {
       "id": 2,
@@ -27,7 +29,9 @@
       "toll": 7000,
       "fuel": 18560,
       "note": "1층",
-      "warranty": "2027-09-21"
+      "warranty": "2027-09-21",
+      "page": "서.경",
+      "region": "서.경"
     },
     {
       "id": 3,
@@ -38,7 +42,9 @@
       "toll": 2000,
       "fuel": 10840,
       "note": "7층",
-      "warranty": ""
+      "warranty": "",
+      "page": "1~10",
+      "region": ""
     },
     {
       "id": 4,
@@ -49,7 +55,9 @@
       "toll": 6000,
       "fuel": 16651,
       "note": "3층",
-      "warranty": "2027-02-03"
+      "warranty": "2027-02-03",
+      "page": "서.경",
+      "region": "서.경"
     },
     {
       "id": 5,
@@ -60,7 +68,9 @@
       "toll": 6900,
       "fuel": 16136,
       "note": "",
-      "warranty": ""
+      "warranty": "",
+      "page": "1~10",
+      "region": ""
     },
     {
       "id": 6,
@@ -71,7 +81,9 @@
       "toll": 5500,
       "fuel": 15883,
       "note": "",
-      "warranty": ""
+      "warranty": "",
+      "page": "서.경",
+      "region": "서.경"
     },
     {
       "id": 7,
@@ -82,7 +94,9 @@
       "toll": "",
       "fuel": 3477,
       "note": "",
-      "warranty": ""
+      "warranty": "",
+      "page": "1~10",
+      "region": ""
     },
     {
       "id": 8,
@@ -93,7 +107,9 @@
       "toll": 4900,
       "fuel": 18085,
       "note": "5층",
-      "warranty": "2027-02-03"
+      "warranty": "2027-02-03",
+      "page": "서.경",
+      "region": "서.경"
     },
     {
       "id": 9,
@@ -104,7 +120,9 @@
       "toll": "",
       "fuel": 4453,
       "note": "3층",
-      "warranty": ""
+      "warranty": "",
+      "page": "1~10",
+      "region": ""
     },
     {
       "id": 10,
@@ -115,7 +133,9 @@
       "toll": 2800,
       "fuel": 15881,
       "note": "",
-      "warranty": ""
+      "warranty": "",
+      "page": "서.경",
+      "region": "서.경"
     },
     {
       "id": 11,
@@ -126,7 +146,9 @@
       "toll": "",
       "fuel": 5395,
       "note": "",
-      "warranty": ""
+      "warranty": "",
+      "page": "1~10",
+      "region": ""
     },
     {
       "id": 12,
@@ -137,7 +159,9 @@
       "toll": 4500,
       "fuel": 14424,
       "note": "6층",
-      "warranty": "2027-02-05"
+      "warranty": "2027-02-05",
+      "page": "서.경",
+      "region": "서.경"
     },
     {
       "id": 13,
@@ -148,7 +172,9 @@
       "toll": 11700,
       "fuel": 44527,
       "note": "",
-      "warranty": ""
+      "warranty": "",
+      "page": "1~10",
+      "region": ""
     },
     {
       "id": 14,
@@ -159,7 +185,9 @@
       "toll": "",
       "fuel": 8607,
       "note": "1층",
-      "warranty": "2027-02-03"
+      "warranty": "2027-02-03",
+      "page": "서.경",
+      "region": "서.경"
     },
     {
       "id": 15,
@@ -170,7 +198,9 @@
       "toll": 8800,
       "fuel": 35868,
       "note": "",
-      "warranty": ""
+      "warranty": "",
+      "page": "1~10",
+      "region": ""
     },
     {
       "id": 16,
@@ -181,7 +211,9 @@
       "toll": 1000,
       "fuel": 7854,
       "note": "5층",
-      "warranty": "2027-01-06"
+      "warranty": "2027-01-06",
+      "page": "서.경",
+      "region": "서.경"
     },
     {
       "id": 17,
@@ -192,7 +224,9 @@
       "toll": "",
       "fuel": 20397,
       "note": "젤위에 공장",
-      "warranty": ""
+      "warranty": "",
+      "page": "1~10",
+      "region": ""
     },
     {
       "id": 18,
@@ -203,7 +237,9 @@
       "toll": 1000,
       "fuel": 7854,
       "note": "지하1층",
-      "warranty": ""
+      "warranty": "",
+      "page": "서.경",
+      "region": "서.경"
     },
     {
       "id": 19,
@@ -214,7 +250,9 @@
       "toll": 1900,
       "fuel": 10594,
       "note": "정문 실내화",
-      "warranty": ""
+      "warranty": "",
+      "page": "1~10",
+      "region": ""
     },
     {
       "id": 20,
@@ -225,7 +263,9 @@
       "toll": 2300,
       "fuel": 8508,
       "note": "4층",
-      "warranty": ""
+      "warranty": "",
+      "page": "서.경",
+      "region": "서.경"
     },
     {
       "id": 21,
@@ -236,7 +276,9 @@
       "toll": "",
       "fuel": 3705,
       "note": "",
-      "warranty": ""
+      "warranty": "",
+      "page": "11~20",
+      "region": ""
     },
     {
       "id": 22,
@@ -247,7 +289,9 @@
       "toll": " ",
       "fuel": 6824,
       "note": "3층",
-      "warranty": "2027-07-16"
+      "warranty": "2027-07-16",
+      "page": "서.경",
+      "region": "서.경"
     },
     {
       "id": 23,
@@ -258,7 +302,9 @@
       "toll": 2000,
       "fuel": 18268,
       "note": "티맵",
-      "warranty": ""
+      "warranty": "",
+      "page": "11~20",
+      "region": ""
     },
     {
       "id": 24,
@@ -269,7 +315,9 @@
       "toll": "",
       "fuel": "",
       "note": "3층",
-      "warranty": ""
+      "warranty": "",
+      "page": "11~20",
+      "region": ""
     },
     {
       "id": 25,
@@ -280,7 +328,9 @@
       "toll": 2000,
       "fuel": 11453,
       "note": "2층",
-      "warranty": ""
+      "warranty": "",
+      "page": "서.경",
+      "region": "서.경"
     },
     {
       "id": 26,
@@ -291,7 +341,9 @@
       "toll": 9400,
       "fuel": 19707,
       "note": "2층",
-      "warranty": ""
+      "warranty": "",
+      "page": "11~20",
+      "region": ""
     },
     {
       "id": 27,
@@ -302,7 +354,9 @@
       "toll": 4500,
       "fuel": 11952,
       "note": "",
-      "warranty": ""
+      "warranty": "",
+      "page": "서.경",
+      "region": "서.경"
     },
     {
       "id": 28,
@@ -313,7 +367,9 @@
       "toll": "",
       "fuel": 2901,
       "note": "1층",
-      "warranty": ""
+      "warranty": "",
+      "page": "11~20",
+      "region": ""
     },
     {
       "id": 29,
@@ -324,7 +380,9 @@
       "toll": 6200,
       "fuel": 11937,
       "note": "",
-      "warranty": ""
+      "warranty": "",
+      "page": "서.경",
+      "region": "서.경"
     },
     {
       "id": 30,
@@ -335,7 +393,9 @@
       "toll": "",
       "fuel": 6214,
       "note": "",
-      "warranty": ""
+      "warranty": "",
+      "page": "11~20",
+      "region": ""
     },
     {
       "id": 31,
@@ -346,7 +406,9 @@
       "toll": 2000,
       "fuel": 11453,
       "note": "2층",
-      "warranty": ""
+      "warranty": "",
+      "page": "서.경",
+      "region": "서.경"
     },
     {
       "id": 32,
@@ -357,7 +419,9 @@
       "toll": "",
       "fuel": 1728,
       "note": "2층",
-      "warranty": ""
+      "warranty": "",
+      "page": "11~20",
+      "region": ""
     },
     {
       "id": 33,
@@ -368,7 +432,9 @@
       "toll": 2300,
       "fuel": 12927,
       "note": "8층",
-      "warranty": ""
+      "warranty": "",
+      "page": "서.경",
+      "region": "서.경"
     },
     {
       "id": 34,
@@ -379,7 +445,9 @@
       "toll": 4000,
       "fuel": 17137,
       "note": "3층",
-      "warranty": ""
+      "warranty": "",
+      "page": "11~20",
+      "region": ""
     },
     {
       "id": 35,
@@ -390,7 +458,9 @@
       "toll": 3000,
       "fuel": 13963,
       "note": "1층",
-      "warranty": "2027-06-18"
+      "warranty": "2027-06-18",
+      "page": "지방",
+      "region": "지방"
     },
     {
       "id": 36,
@@ -401,7 +471,9 @@
       "toll": "",
       "fuel": 2847,
       "note": "2층",
-      "warranty": ""
+      "warranty": "",
+      "page": "11~20",
+      "region": ""
     },
     {
       "id": 37,
@@ -412,7 +484,9 @@
       "toll": 4900,
       "fuel": 18808,
       "note": "1층",
-      "warranty": "2027-01-07"
+      "warranty": "2027-01-07",
+      "page": "지방",
+      "region": "지방"
     },
     {
       "id": 38,
@@ -423,7 +497,9 @@
       "toll": "",
       "fuel": 3755,
       "note": "1층",
-      "warranty": ""
+      "warranty": "",
+      "page": "11~20",
+      "region": ""
     },
     {
       "id": 39,
@@ -434,7 +510,9 @@
       "toll": 6700,
       "fuel": 24790,
       "note": "5층",
-      "warranty": "2027-10-14"
+      "warranty": "2027-10-14",
+      "page": "지방",
+      "region": "지방"
     },
     {
       "id": 40,
@@ -445,7 +523,9 @@
       "toll": 7900,
       "fuel": 35902,
       "note": "",
-      "warranty": ""
+      "warranty": "",
+      "page": "21~30",
+      "region": ""
     },
     {
       "id": 41,
@@ -456,7 +536,9 @@
       "toll": 12000,
       "fuel": 43140,
       "note": "",
-      "warranty": ""
+      "warranty": "",
+      "page": "지방",
+      "region": "지방"
     },
     {
       "id": 42,
@@ -467,7 +549,9 @@
       "toll": "",
       "fuel": 6369,
       "note": "",
-      "warranty": ""
+      "warranty": "",
+      "page": "21~30",
+      "region": ""
     },
     {
       "id": 43,
@@ -478,7 +562,9 @@
       "toll": 9700,
       "fuel": 38013,
       "note": "2층",
-      "warranty": "2027-02-03"
+      "warranty": "2027-02-03",
+      "page": "지방",
+      "region": "지방"
     },
     {
       "id": 44,
@@ -489,7 +575,9 @@
       "toll": 1900,
       "fuel": 9587,
       "note": "",
-      "warranty": ""
+      "warranty": "",
+      "page": "21~30",
+      "region": ""
     },
     {
       "id": 45,
@@ -500,7 +588,9 @@
       "toll": 16700,
       "fuel": 85487,
       "note": "5층",
-      "warranty": ""
+      "warranty": "",
+      "page": "지방",
+      "region": "지방"
     },
     {
       "id": 46,
@@ -511,7 +601,9 @@
       "toll": 9700,
       "fuel": 36765,
       "note": "",
-      "warranty": ""
+      "warranty": "",
+      "page": "21~30",
+      "region": ""
     },
     {
       "id": 47,
@@ -522,7 +614,9 @@
       "toll": 3700,
       "fuel": 16448,
       "note": "",
-      "warranty": ""
+      "warranty": "",
+      "page": "21~30",
+      "region": ""
     },
     {
       "id": 48,
@@ -533,7 +627,9 @@
       "toll": "",
       "fuel": 2901,
       "note": "",
-      "warranty": ""
+      "warranty": "",
+      "page": "21~30",
+      "region": ""
     },
     {
       "id": 49,
@@ -544,7 +640,9 @@
       "toll": 6000,
       "fuel": 16679,
       "note": "지하 1층",
-      "warranty": ""
+      "warranty": "",
+      "page": "21~30",
+      "region": ""
     },
     {
       "id": 50,
@@ -555,7 +653,9 @@
       "toll": 16200,
       "fuel": 58588,
       "note": "1번 도크",
-      "warranty": ""
+      "warranty": "",
+      "page": "21~30",
+      "region": ""
     },
     {
       "id": 51,
@@ -566,7 +666,9 @@
       "toll": 16400,
       "fuel": 60847,
       "note": "",
-      "warranty": ""
+      "warranty": "",
+      "page": "21~30",
+      "region": ""
     },
     {
       "id": 52,
@@ -577,7 +679,9 @@
       "toll": 4900,
       "fuel": 18402,
       "note": "",
-      "warranty": ""
+      "warranty": "",
+      "page": "31~40",
+      "region": ""
     },
     {
       "id": 53,
@@ -588,7 +692,9 @@
       "toll": 4300,
       "fuel": 17598,
       "note": "",
-      "warranty": ""
+      "warranty": "",
+      "page": "31~40",
+      "region": ""
     },
     {
       "id": 54,
@@ -599,7 +705,9 @@
       "toll": "",
       "fuel": 2777,
       "note": "",
-      "warranty": ""
+      "warranty": "",
+      "page": "31~40",
+      "region": ""
     },
     {
       "id": 55,
@@ -610,7 +718,9 @@
       "toll": 8800,
       "fuel": 16940,
       "note": "",
-      "warranty": ""
+      "warranty": "",
+      "page": "31~40",
+      "region": ""
     },
     {
       "id": 56,
@@ -621,7 +731,9 @@
       "toll": 6000,
       "fuel": 21305,
       "note": "",
-      "warranty": ""
+      "warranty": "",
+      "page": "31~40",
+      "region": ""
     },
     {
       "id": 57,
@@ -632,7 +744,9 @@
       "toll": "",
       "fuel": 2713,
       "note": "2층",
-      "warranty": ""
+      "warranty": "",
+      "page": "31~40",
+      "region": ""
     },
     {
       "id": 58,
@@ -643,7 +757,9 @@
       "toll": 1200,
       "fuel": "",
       "note": "2층",
-      "warranty": ""
+      "warranty": "",
+      "page": "31~40",
+      "region": ""
     },
     {
       "id": 59,
@@ -654,7 +770,9 @@
       "toll": "",
       "fuel": 3940,
       "note": "",
-      "warranty": ""
+      "warranty": "",
+      "page": "31~40",
+      "region": ""
     },
     {
       "id": 60,
@@ -665,7 +783,9 @@
       "toll": 1000,
       "fuel": 10672,
       "note": "1층",
-      "warranty": ""
+      "warranty": "",
+      "page": "41~50",
+      "region": ""
     },
     {
       "id": 61,
@@ -676,7 +796,9 @@
       "toll": 4500,
       "fuel": 14952,
       "note": "",
-      "warranty": ""
+      "warranty": "",
+      "page": "41~50",
+      "region": ""
     },
     {
       "id": 62,
@@ -687,7 +809,9 @@
       "toll": "",
       "fuel": 3113,
       "note": "",
-      "warranty": ""
+      "warranty": "",
+      "page": "41~50",
+      "region": ""
     },
     {
       "id": 63,
@@ -698,7 +822,9 @@
       "toll": 4500,
       "fuel": 12081,
       "note": "2층, C와D사이",
-      "warranty": ""
+      "warranty": "",
+      "page": "41~50",
+      "region": ""
     },
     {
       "id": 64,
@@ -709,7 +835,9 @@
       "toll": 4500,
       "fuel": 12420,
       "note": "",
-      "warranty": ""
+      "warranty": "",
+      "page": "41~50",
+      "region": ""
     },
     {
       "id": 65,
@@ -720,7 +848,9 @@
       "toll": "",
       "fuel": "",
       "note": "",
-      "warranty": ""
+      "warranty": "",
+      "page": "41~50",
+      "region": ""
     },
     {
       "id": 66,
@@ -731,7 +861,9 @@
       "toll": 3700,
       "fuel": 16380,
       "note": "",
-      "warranty": ""
+      "warranty": "",
+      "page": "41~50",
+      "region": ""
     },
     {
       "id": 67,
@@ -742,7 +874,9 @@
       "toll": "",
       "fuel": 17715,
       "note": "",
-      "warranty": ""
+      "warranty": "",
+      "page": "41~50",
+      "region": ""
     },
     {
       "id": 68,
@@ -753,7 +887,9 @@
       "toll": "",
       "fuel": 6014,
       "note": "",
-      "warranty": ""
+      "warranty": "",
+      "page": "41~50",
+      "region": ""
     },
     {
       "id": 69,
@@ -764,7 +900,9 @@
       "toll": "",
       "fuel": 4887,
       "note": "",
-      "warranty": ""
+      "warranty": "",
+      "page": "41~50",
+      "region": ""
     },
     {
       "id": 70,
@@ -775,7 +913,9 @@
       "toll": 7400,
       "fuel": 20026,
       "note": "",
-      "warranty": ""
+      "warranty": "",
+      "page": "41~50",
+      "region": ""
     },
     {
       "id": 71,
@@ -786,7 +926,9 @@
       "toll": 16200,
       "fuel": 55344,
       "note": "",
-      "warranty": ""
+      "warranty": "",
+      "page": "41~50",
+      "region": ""
     },
     {
       "id": 72,
@@ -797,7 +939,9 @@
       "toll": 6000,
       "fuel": 15744,
       "note": "",
-      "warranty": ""
+      "warranty": "",
+      "page": "41~50",
+      "region": ""
     },
     {
       "id": 73,
@@ -808,7 +952,22 @@
       "toll": 1900,
       "fuel": 12781,
       "note": "",
-      "warranty": ""
+      "warranty": "",
+      "page": "41~50",
+      "region": ""
+    },
+    {
+      "id": 74,
+      "type": "general",
+      "name": "휠라 물류센터",
+      "address": "경기도 이천시 호법면 덕평로 257-34",
+      "distance": 24,
+      "toll": "",
+      "fuel": 3928,
+      "note": "B1층",
+      "warranty": "",
+      "page": "",
+      "region": ""
     }
   ]
 }
