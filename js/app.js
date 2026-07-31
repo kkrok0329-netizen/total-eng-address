@@ -1,12 +1,13 @@
 'use strict';
 
-const APP_VERSION = 'V3.6.1';
+const APP_VERSION = 'V3.6.2';
 const API_URL = 'https://script.google.com/macros/s/AKfycbyF2FyCA9Qqbqi90BCD-jE_LE_e-og2ty5sBOSgxVWydSCiB9fv3qOpmNpwsUlVxR54/exec';
 const STORAGE_KEYS = {
   favorites: 'tea_favorites',
   recentVisits: 'tea_recentVisits',
   recentSearches: 'tea_recentSearches',
-  darkMode: 'tea_darkMode'
+  darkMode: 'tea_darkMode',
+  siteCache: 'tea_siteCache_v2'
 };
 
 let sites = [];
@@ -49,6 +50,7 @@ const els = {
   siteAddressInput: $('siteAddressInput'),
   siteNoteInput: $('siteNoteInput'),
   siteSaveBtn: $('siteSaveBtn'),
+  deleteSiteBtn: $('deleteSiteBtn'),
   toast: $('toast'),
   refreshBtn: $('refreshBtn'),
   installBtn: $('installBtn'),
@@ -86,6 +88,29 @@ function saveStorage() {
   localStorage.setItem(STORAGE_KEYS.favorites, JSON.stringify(favorites));
   localStorage.setItem(STORAGE_KEYS.recentVisits, JSON.stringify(recentVisits));
   localStorage.setItem(STORAGE_KEYS.recentSearches, JSON.stringify(recentSearches));
+}
+
+function readSiteCache() {
+  try {
+    const cached = JSON.parse(localStorage.getItem(STORAGE_KEYS.siteCache) || 'null');
+    if (!cached || !Array.isArray(cached.sites)) return null;
+    return cached;
+  } catch (error) {
+    console.warn('현장 캐시를 읽지 못했습니다.', error);
+    return null;
+  }
+}
+
+function saveSiteCache(data) {
+  try {
+    localStorage.setItem(STORAGE_KEYS.siteCache, JSON.stringify({
+      meta: data.meta || {},
+      sites: Array.isArray(data.sites) ? data.sites : [],
+      cachedAt: Date.now()
+    }));
+  } catch (error) {
+    console.warn('현장 캐시를 저장하지 못했습니다.', error);
+  }
 }
 
 function normalizeSite(site) {
@@ -151,45 +176,85 @@ function siteById(id) {
   return sites.find((site) => Number(site.id) === numericId);
 }
 
-async function loadData() {
+function applySiteData(data) {
+  officialMeta = data.meta || {};
+  meta = { ...officialMeta };
+  officialSites = Array.isArray(data.sites) ? data.sites.map(normalizeSite) : [];
+  sites = officialSites.map((site) => ({ ...site }));
+  updateMeta();
+  render();
+  renderSettingsSiteList();
+}
+
+function hideSplashQuickly() {
+  window.setTimeout(() => els.splash?.classList.add('hide'), 50);
+}
+
+async function fetchLiveData() {
+  const controller = new AbortController();
+  const timeoutId = window.setTimeout(() => controller.abort(), 10000);
   try {
-    setLoading('불러오는 중...');
-    let data;
-
-    try {
-      const response = await fetch(`${API_URL}?action=sites&_=${Date.now()}`, { cache: 'no-store' });
-      if (!response.ok) throw new Error('Google Sheets 연결 실패');
-      data = await response.json();
-      if (!data.success || !Array.isArray(data.sites)) {
-        throw new Error(data.error || '현장 데이터 형식 오류');
-      }
-    } catch (apiError) {
-      console.warn('Google Sheets 데이터를 불러오지 못해 백업 데이터를 사용합니다.', apiError);
-      const backupResponse = await fetch('./data/sites.json', { cache: 'no-cache' });
-      if (!backupResponse.ok) throw new Error('백업 데이터도 불러오지 못했습니다.');
-      data = await backupResponse.json();
-      data.meta = { ...(data.meta || {}), source: '내장 백업' };
-      toast('오프라인 백업 데이터를 표시합니다.');
+    const response = await fetch(`${API_URL}?action=sites&_=${Date.now()}`, {
+      cache: 'no-store',
+      signal: controller.signal
+    });
+    if (!response.ok) throw new Error('Google Sheets 연결 실패');
+    const data = await response.json();
+    if (!data.success || !Array.isArray(data.sites)) {
+      throw new Error(data.error || '현장 데이터 형식 오류');
     }
-
-    officialMeta = data.meta || {};
-    meta = { ...officialMeta };
-    officialSites = Array.isArray(data.sites) ? data.sites.map(normalizeSite) : [];
-    sites = officialSites.map((site) => ({ ...site }));
-
-    updateMeta();
-    render();
-    renderSettingsSiteList();
-  } catch (error) {
-    console.error(error);
-    els.siteList.innerHTML = '';
-    const message = document.createElement('div');
-    message.className = 'empty';
-    message.textContent = `데이터를 불러오지 못했습니다. ${error.message}`;
-    els.siteList.appendChild(message);
-    setLoading('0개 현장');
+    return data;
   } finally {
-    window.setTimeout(() => els.splash?.classList.add('hide'), 350);
+    window.clearTimeout(timeoutId);
+  }
+}
+
+async function loadData(options = {}) {
+  const skipCache = options.skipCache === true;
+  const notifyOnError = options.notifyOnError === true;
+  let hasVisibleData = sites.length > 0;
+  setLoading('불러오는 중...');
+
+  if (!skipCache) {
+    const cached = readSiteCache();
+    if (cached) {
+      applySiteData(cached);
+      hasVisibleData = true;
+      hideSplashQuickly();
+    } else {
+      try {
+        const backupResponse = await fetch('./data/sites.json', { cache: 'force-cache' });
+        if (backupResponse.ok) {
+          const backupData = await backupResponse.json();
+          backupData.meta = { ...(backupData.meta || {}), source: '내장 백업' };
+          applySiteData(backupData);
+          hasVisibleData = true;
+          hideSplashQuickly();
+        }
+      } catch (backupError) {
+        console.warn('내장 백업을 먼저 표시하지 못했습니다.', backupError);
+      }
+    }
+  }
+
+  try {
+    const liveData = await fetchLiveData();
+    applySiteData(liveData);
+    saveSiteCache(liveData);
+  } catch (error) {
+    console.warn('Google Sheets 최신 데이터를 불러오지 못했습니다.', error);
+    if (!hasVisibleData) {
+      els.siteList.innerHTML = '';
+      const message = document.createElement('div');
+      message.className = 'empty';
+      message.textContent = '현장목록을 불러오지 못했습니다. 인터넷 연결을 확인해 주세요.';
+      els.siteList.appendChild(message);
+      setLoading('0개 현장');
+    } else if (notifyOnError) {
+      toast('저장된 현장목록을 표시합니다.');
+    }
+  } finally {
+    hideSplashQuickly();
   }
 }
 
@@ -654,6 +719,8 @@ function openSiteEditor(id = null) {
   els.siteNoteInput.value = site?.note || '';
   els.siteEditorTitle.textContent = site ? '현장 수정' : '현장 추가';
   els.siteSaveBtn.textContent = site ? '수정 저장하기' : '등록하기';
+  els.deleteSiteBtn.hidden = !site;
+  els.deleteSiteBtn.closest('.site-editor-actions')?.classList.toggle('editing', Boolean(site));
 
   els.siteEditorModal.hidden = false;
   els.siteEditorModal.setAttribute('aria-hidden', 'false');
@@ -661,8 +728,9 @@ function openSiteEditor(id = null) {
   window.setTimeout(() => els.siteNameInput?.focus(), 40);
 }
 
-function closeSiteEditor() {
+function closeSiteEditor(force = false) {
   if (!els.siteEditorModal) return;
+  if (!force && (els.siteSaveBtn.disabled || els.deleteSiteBtn.disabled)) return;
   els.siteEditorModal.hidden = true;
   els.siteEditorModal.setAttribute('aria-hidden', 'true');
   document.body.classList.remove('site-editor-open');
@@ -681,6 +749,7 @@ async function saveSiteFromForm(event) {
   }
 
   els.siteSaveBtn.disabled = true;
+  els.deleteSiteBtn.disabled = true;
   els.siteSaveBtn.textContent = idValue ? '수정 중...' : '등록 중...';
 
   try {
@@ -702,9 +771,19 @@ async function saveSiteFromForm(event) {
     if (!response.ok) throw new Error('등록 서버에 연결하지 못했습니다.');
     const result = await response.json();
     if (!result.success) throw new Error(result.error || '현장 저장에 실패했습니다.');
+    if (!result.site || !result.site.id) throw new Error('저장 결과를 확인하지 못했습니다.');
 
-    closeSiteEditor();
-    await loadData();
+    const savedSite = normalizeSite(result.site || {});
+    if (idValue) {
+      sites = sites.map(site => Number(site.id) === idValue ? savedSite : site);
+    } else {
+      sites = [...sites, savedSite];
+    }
+    saveSiteCache({ meta, sites });
+    render();
+    renderSettingsSiteList();
+    closeSiteEditor(true);
+    await loadData({ skipCache: true });
     renderSettingsSiteList();
     toast(idValue ? '현장 정보가 모든 직원에게 수정되었습니다.' : '새 현장이 모든 직원에게 등록되었습니다.');
   } catch (error) {
@@ -712,7 +791,72 @@ async function saveSiteFromForm(event) {
     toast(error.message || '현장 저장에 실패했습니다.');
   } finally {
     els.siteSaveBtn.disabled = false;
+    els.deleteSiteBtn.disabled = false;
     els.siteSaveBtn.textContent = idValue ? '수정 저장하기' : '등록하기';
+  }
+}
+
+async function deleteCurrentSite() {
+  const id = Number(els.siteIdInput.value || 0);
+  const site = siteById(id);
+  if (!site) {
+    toast('삭제할 현장을 찾을 수 없습니다.');
+    return;
+  }
+
+  const confirmed = window.confirm(
+    `“${site.name}” 현장을 삭제할까요?\n삭제 직전 전체 목록은 Google Sheets 자동백업에 보관됩니다.`
+  );
+  if (!confirmed) return;
+
+  const typedName = window.prompt(
+    `실수 삭제 방지를 위해 현장명을 그대로 입력하세요.\n\n${site.name}`,
+    ''
+  );
+  if (typedName === null) return;
+  if (typedName.trim() !== site.name) {
+    toast('현장명이 일치하지 않아 삭제하지 않았습니다.');
+    return;
+  }
+
+  els.siteSaveBtn.disabled = true;
+  els.deleteSiteBtn.disabled = true;
+  els.deleteSiteBtn.textContent = '삭제 중...';
+
+  try {
+    const response = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({
+        action: 'deleteSite',
+        site: {
+          id,
+          confirmName: typedName.trim()
+        }
+      })
+    });
+
+    if (!response.ok) throw new Error('삭제 서버에 연결하지 못했습니다.');
+    const result = await response.json();
+    if (!result.success) throw new Error(result.error || '현장 삭제에 실패했습니다.');
+
+    sites = sites.filter(item => Number(item.id) !== id);
+    favorites = favorites.filter(value => Number(value) !== id);
+    recentVisits = recentVisits.filter(value => Number(value) !== id);
+    saveStorage();
+    saveSiteCache({ meta, sites });
+    render();
+    renderSettingsSiteList();
+    closeSiteEditor(true);
+    await loadData({ skipCache: true });
+    toast('현장이 삭제됐고 직전 목록은 자동백업에 보관됐습니다.');
+  } catch (error) {
+    console.error(error);
+    toast(error.message || '현장 삭제에 실패했습니다.');
+  } finally {
+    els.siteSaveBtn.disabled = false;
+    els.deleteSiteBtn.disabled = false;
+    els.deleteSiteBtn.textContent = '현장 삭제';
   }
 }
 
@@ -952,13 +1096,17 @@ function initEvents() {
     if (!button) return;
     openSiteEditor(Number(button.dataset.editSiteId));
   });
-  els.closeSiteEditorBtn?.addEventListener('click', closeSiteEditor);
+  els.closeSiteEditorBtn?.addEventListener('click', () => closeSiteEditor());
   els.siteEditorModal?.addEventListener('click', (event) => {
     if (event.target === els.siteEditorModal) closeSiteEditor();
   });
   els.siteEditorForm?.addEventListener('submit', saveSiteFromForm);
+  els.deleteSiteBtn?.addEventListener('click', deleteCurrentSite);
 
-  els.refreshBtn.addEventListener('click', loadData);
+  els.refreshBtn.addEventListener('click', () => loadData({
+    skipCache: true,
+    notifyOnError: true
+  }));
   els.installBtn.addEventListener('click', installApp);
   if (!window.__TEA_KAKAO_INLINE_BOUND__) {
     els.openChromeBtn?.addEventListener('click', openInChrome);
@@ -984,7 +1132,7 @@ function registerServiceWorker() {
 
   window.addEventListener('load', async () => {
     try {
-      const registration = await navigator.serviceWorker.register('./service-worker.js?v=3.6.1', {
+      const registration = await navigator.serviceWorker.register('./service-worker.js?v=3.6.2', {
         scope: './',
         updateViaCache: 'none'
       });

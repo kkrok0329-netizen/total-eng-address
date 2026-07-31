@@ -1,6 +1,6 @@
 {
   "meta": {
-    "version": "V3.6.1",
+    "version": "V3.6.2",
     "updatedAt": "2026-07-31",
     "sourceFile": "address.xlsx",
     "generalColumns": "B=현장명, C=주소, D=사무실 거리, E=톨비, F=주유비, G=기타, H=Warranty, I=Page",
@@ -965,6 +965,19 @@
       "toll": "",
       "fuel": 3928,
       "note": "B1층",
+      "warranty": "",
+      "page": "",
+      "region": ""
+    },
+    {
+      "id": 75,
+      "type": "general",
+      "name": "TEST",
+      "address": "인천 서구 청라에메랄드로 76번길 14",
+      "distance": "",
+      "toll": "",
+      "fuel": "",
+      "note": "TEST",
       "warranty": "",
       "page": "",
       "region": ""
