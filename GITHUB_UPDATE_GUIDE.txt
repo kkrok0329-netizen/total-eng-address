@@ -1,25 +1,20 @@
-TOTAL ENG 현장주소 V3.5.7 GitHub 업데이트 방법
+TOTAL ENG 현장주소 V3.6.1 GitHub 업데이트 방법
 
-1. TOTAL_ENG_Address_GitHub_Ready_V3_5_7.zip을 다운로드합니다.
-2. ZIP 압축을 풉니다.
-3. GitHub의 total-eng-address 저장소를 엽니다.
-4. Add file → Upload files를 누릅니다.
-5. 압축을 푼 폴더 안의 파일과 폴더 전체를 업로드합니다.
-6. Commit message에 아래처럼 입력합니다.
-   설정 및 현장주소 편집 기능 추가 V3.5.7
-7. Commit changes를 누릅니다.
-8. 약 1~3분 후 아래 주소에서 화면 아래 버전을 확인합니다.
-   https://kkrok0329-netizen.github.io/total-eng-address/?update=357
-9. 화면 아래가 V3.5.7이면 반영 완료입니다.
-
-현장주소를 앱에서 수정한 뒤 직원 전체에게 반영하는 방법
-
-1. 앱의 오른쪽 위 ⚙️ 설정을 누릅니다.
-2. 주소 추가 또는 기존 현장을 눌러 수정합니다.
-3. 설정 아래쪽의 `GitHub 반영용 sites.json 내려받기`를 누릅니다.
-4. GitHub 저장소에서 data 폴더를 엽니다.
-5. 기존 sites.json을 새로 내려받은 sites.json으로 교체합니다.
+1. TOTAL_ENG_Address_V3.6.1_GitHub.zip의 압축을 풉니다.
+2. GitHub의 total-eng-address 저장소를 엽니다.
+3. Add file → Upload files를 누릅니다.
+4. 압축을 푼 폴더 안의 파일과 폴더 전체를 업로드합니다.
+5. Commit message에 `Google Sheets 연동 V3.6.1`이라고 입력합니다.
 6. Commit changes를 누릅니다.
-7. 직원은 앱을 완전히 닫았다가 다시 열면 새 데이터를 받습니다.
+7. 약 1~3분 후 앱을 완전히 닫았다가 다시 엽니다.
+8. 화면 아래 버전이 V3.6.1이면 반영 완료입니다.
 
-주의: 설정창의 수정은 GitHub에 올리기 전까지 해당 휴대폰에만 저장됩니다.
+이 업데이트는 V3.5.7의 설정창과 다크모드 방식을 그대로 유지합니다.
+업데이트 후 직원들이 앱을 다시 설치할 필요는 없습니다.
+
+현장 추가·수정 방법
+
+1. 앱 오른쪽 위 ⚙️ 설정을 누릅니다.
+2. `+ 주소 추가` 또는 기존 현장을 누릅니다.
+3. 현장명, 구분, 주소, 기타 메모를 입력하고 저장합니다.
+4. Google Sheets에 즉시 저장되며 다른 직원은 새로고침 후 확인할 수 있습니다.

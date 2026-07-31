@@ -1,6 +1,6 @@
 {
   "meta": {
-    "version": "V3.5.1",
+    "version": "V3.6.1",
     "updatedAt": "2026-07-31",
     "sourceFile": "address.xlsx",
     "generalColumns": "B=현장명, C=주소, D=사무실 거리, E=톨비, F=주유비, G=기타, H=Warranty, I=Page",
@@ -959,7 +959,7 @@
     {
       "id": 74,
       "type": "general",
-      "name": "휠라물류센터",
+      "name": "휠라 물류센터",
       "address": "경기도 이천시 호법면 덕평로 257-34",
       "distance": 24,
       "toll": "",

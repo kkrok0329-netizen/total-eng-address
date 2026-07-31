@@ -13,12 +13,167 @@
 
   <title>TOTAL ENG 현장주소</title>
 
-  <link rel="manifest" href="./manifest.json" />
-  <link rel="stylesheet" href="./style.css" />
+  <link rel="manifest" href="./manifest.json?v=3.6.1" />
+  <link rel="stylesheet" href="./style.css?v=3.6.1" />
   <link rel="icon" type="image/png" sizes="32x32" href="./img/favicon-32.png" />
   <link rel="apple-touch-icon" sizes="180x180" href="./img/icon-180.png" />
 </head>
-<body>
+<body data-app-version="V3.6.1">
+  <div id="kakaoGuide" class="kakao-guide" hidden aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="kakaoGuideTitle">
+    <div class="kakao-guide-card">
+      <img class="kakao-guide-logo" src="./img/logo.png" alt="TOTAL ENG" />
+      <span class="kakao-guide-label">휴대폰 앱 설치 안내</span>
+      <h2 id="kakaoGuideTitle">카카오톡 안에서는<br />앱 설치가 보이지 않아요</h2>
+      <p id="kakaoGuideMessage" class="kakao-guide-message">아래 버튼을 눌러 Chrome에서 열어 주세요.</p>
+
+      <ol id="kakaoAndroidSteps" class="kakao-guide-steps">
+        <li><strong>Chrome으로 열기</strong> 버튼을 누르세요.</li>
+        <li>Chrome 화면에서 <strong>설치</strong>를 누르세요.</li>
+        <li>휴대폰 바탕화면의 <strong>현장주소</strong>를 누르면 됩니다.</li>
+      </ol>
+
+      <ol id="kakaoIosSteps" class="kakao-guide-steps" hidden>
+        <li>카카오톡 오른쪽 위의 <strong>점 3개(⋯)</strong>를 누르세요.</li>
+        <li><strong>Safari로 열기</strong>를 누르세요.</li>
+        <li>Safari의 <strong>공유 → 홈 화면에 추가</strong>를 누르세요.</li>
+      </ol>
+
+      <button id="openChromeBtn" class="kakao-primary-btn" type="button">Chrome으로 열기</button>
+      <p id="kakaoAndroidFallback" class="kakao-guide-note">버튼이 안 되면 오른쪽 위 <strong>점 3개 → 다른 브라우저로 열기</strong>를 누르세요.</p>
+      <button id="copyAppLinkBtn" class="kakao-secondary-btn" type="button">링크 복사하기</button>
+      <button id="continueInKakaoBtn" class="kakao-text-btn" type="button">설치하지 않고 일단 사용하기</button>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      'use strict';
+
+      const userAgent = navigator.userAgent || '';
+      const params = new URLSearchParams(window.location.search);
+      const forcedByLink = params.get('from') === 'kakao' || params.get('kakao') === '1';
+      const kakaoUserAgent = /KAKAOTALK|KakaoTalk/i.test(userAgent);
+      const isKakaoContext = kakaoUserAgent || forcedByLink;
+      const isStandalone = window.matchMedia('(display-mode: standalone)').matches
+        || navigator.standalone === true;
+
+      window.__TEA_KAKAO_CONTEXT__ = isKakaoContext;
+
+      function cleanAppUrl() {
+        const url = new URL(window.location.href);
+        url.searchParams.delete('from');
+        url.searchParams.delete('kakao');
+        return url.toString();
+      }
+
+      function isIos() {
+        const ipadDesktopMode = navigator.platform === 'MacIntel'
+          && navigator.maxTouchPoints > 1;
+        return /iphone|ipad|ipod/i.test(userAgent) || ipadDesktopMode;
+      }
+
+      function isAndroid() {
+        return /android/i.test(userAgent);
+      }
+
+      function showGuide() {
+        const guide = document.getElementById('kakaoGuide');
+        if (!guide || isStandalone) return;
+
+        const ios = isIos();
+        const androidSteps = document.getElementById('kakaoAndroidSteps');
+        const iosSteps = document.getElementById('kakaoIosSteps');
+        const openChromeBtn = document.getElementById('openChromeBtn');
+        const androidFallback = document.getElementById('kakaoAndroidFallback');
+        const message = document.getElementById('kakaoGuideMessage');
+
+        guide.hidden = false;
+        guide.setAttribute('aria-hidden', 'false');
+        document.body.classList.add('kakao-guide-open');
+
+        if (androidSteps) androidSteps.hidden = ios;
+        if (iosSteps) iosSteps.hidden = !ios;
+        if (openChromeBtn) openChromeBtn.hidden = ios || !isAndroid();
+        if (androidFallback) androidFallback.hidden = ios || !isAndroid();
+        if (message) {
+          message.textContent = ios
+            ? 'Safari에서 열면 홈 화면에 앱으로 추가할 수 있어요.'
+            : '아래 버튼을 누르면 Chrome에서 설치할 수 있어요.';
+        }
+      }
+
+      function hideGuide() {
+        const guide = document.getElementById('kakaoGuide');
+        if (!guide) return;
+        guide.hidden = true;
+        guide.setAttribute('aria-hidden', 'true');
+        document.body.classList.remove('kakao-guide-open');
+      }
+
+      function openChrome(event) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+
+        if (!isAndroid()) return;
+        const target = new URL(cleanAppUrl());
+        const scheme = target.protocol.replace(':', '') || 'https';
+        const path = `${target.host}${target.pathname}${target.search}${target.hash}`;
+        const fallback = encodeURIComponent(target.toString());
+        window.location.href = `intent://${path}#Intent;scheme=${scheme};package=com.android.chrome;S.browser_fallback_url=${fallback};end`;
+      }
+
+      async function copyLink(event) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        const button = event.currentTarget;
+        const text = cleanAppUrl();
+        let copied = false;
+
+        try {
+          await navigator.clipboard.writeText(text);
+          copied = true;
+        } catch (error) {
+          const textarea = document.createElement('textarea');
+          textarea.value = text;
+          textarea.setAttribute('readonly', '');
+          textarea.style.position = 'fixed';
+          textarea.style.opacity = '0';
+          document.body.appendChild(textarea);
+          textarea.select();
+          copied = document.execCommand('copy');
+          textarea.remove();
+        }
+
+        if (button) {
+          const original = button.textContent;
+          button.textContent = copied ? '복사 완료' : '주소를 길게 눌러 복사해 주세요';
+          window.setTimeout(() => { button.textContent = original; }, 1600);
+        }
+      }
+
+      function continueUse(event) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        hideGuide();
+      }
+
+      window.__TEA_SHOW_KAKAO_GUIDE__ = showGuide;
+      window.__TEA_HIDE_KAKAO_GUIDE__ = hideGuide;
+      window.__TEA_CLEAN_APP_URL__ = cleanAppUrl;
+      window.__TEA_KAKAO_INLINE_BOUND__ = true;
+
+      const openChromeBtn = document.getElementById('openChromeBtn');
+      const copyLinkBtn = document.getElementById('copyAppLinkBtn');
+      const continueBtn = document.getElementById('continueInKakaoBtn');
+
+      openChromeBtn?.addEventListener('click', openChrome, true);
+      copyLinkBtn?.addEventListener('click', copyLink, true);
+      continueBtn?.addEventListener('click', continueUse, true);
+
+      if (isKakaoContext) showGuide();
+    }());
+  </script>
+
   <div id="splash" class="splash" aria-live="polite">
     <img src="./img/logo.png" alt="TOTAL ENG" />
     <strong>현장주소</strong>
@@ -31,7 +186,7 @@
         <img src="./img/logo.png" class="logo" alt="TOTAL ENG" />
         <div class="header-actions">
           <button id="installBtn" class="icon-btn install-btn" type="button" hidden>설치</button>
-          <button id="darkModeBtn" class="icon-btn" type="button" aria-label="다크모드 켜기">🌙</button>
+          <button id="settingsBtn" class="icon-btn settings-btn" type="button" aria-label="설정 열기">⚙️</button>
         </div>
       </div>
       <h1>현장주소</h1>
@@ -59,16 +214,13 @@
 
     <section class="summary-row">
       <span id="countText">전체 0개</span>
-      <div class="summary-actions">
-        <button id="addSiteBtn" class="add-site-btn" type="button">＋ 현장 등록</button>
-        <button id="refreshBtn" type="button">새로고침</button>
-      </div>
+      <button id="refreshBtn" type="button">새로고침</button>
     </section>
 
     <main id="siteList" class="site-list"></main>
 
     <footer class="app-footer">
-      <span id="versionText">V3.5.1</span>
+      <span id="versionText">V3.6.1</span>
       <span id="updatedText">업데이트 확인 중</span>
     </footer>
   </div>
@@ -80,40 +232,110 @@
     </div>
   </div>
 
-  <div id="siteFormModal" class="detail-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="siteFormTitle">
-    <div class="detail-box form-box">
-      <button id="closeSiteFormBtn" class="close-detail" type="button" aria-label="현장 등록 닫기">✕</button>
-      <h2 id="siteFormTitle" class="form-title">새 현장 등록</h2>
-      <p class="form-description">저장하면 모든 직원의 앱에 바로 표시됩니다.</p>
-      <form id="siteForm">
-        <label class="form-field">
-          <span>현장명 <b>필수</b></span>
-          <input id="siteNameInput" name="name" type="text" maxlength="80" autocomplete="off" required placeholder="예: 휠라 물류센터" />
-        </label>
-        <label class="form-field">
-          <span>구분 <b>필수</b></span>
-          <select id="siteTypeInput" name="type" required>
+  <div id="vehicleAppModal" class="vehicle-app-modal" hidden aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="vehicleAppTitle">
+    <div class="vehicle-app-card">
+      <button id="closeVehicleAppBtn" class="vehicle-app-close" type="button" aria-label="차량 앱 안내 닫기">✕</button>
+      <span class="vehicle-app-label">차량 내비게이션으로 보내기</span>
+      <h2 id="vehicleAppTitle">차량 앱으로 보내기</h2>
+      <p id="vehicleAppMessage" class="vehicle-app-message">현장주소를 복사해 두었습니다.</p>
+      <div id="vehicleAppAddress" class="vehicle-app-address"></div>
+      <ol id="vehicleAppSteps" class="vehicle-app-steps"></ol>
+      <p class="vehicle-app-note">차량 등록 및 커넥티드 서비스 가입 여부에 따라 메뉴가 다를 수 있습니다.</p>
+      <button id="openVehicleAppBtn" class="vehicle-app-primary" type="button">차량 앱 열기</button>
+      <button id="copyVehicleAddressBtn" class="vehicle-app-secondary" type="button">주소 다시 복사</button>
+    </div>
+  </div>
+
+  <div id="settingsModal" class="settings-modal" hidden aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+    <div class="settings-sheet">
+      <div class="settings-head">
+        <div>
+          <span class="settings-label">앱 관리</span>
+          <h2 id="settingsTitle">설정</h2>
+        </div>
+        <button id="closeSettingsBtn" class="settings-close" type="button" aria-label="설정 닫기">✕</button>
+      </div>
+
+      <section class="settings-section">
+        <div class="settings-row">
+          <div>
+            <strong>다크모드</strong>
+            <p>화면을 어둡게 표시합니다.</p>
+          </div>
+          <label class="switch" aria-label="다크모드 설정">
+            <input id="darkModeToggle" type="checkbox" />
+            <span class="switch-slider"></span>
+          </label>
+        </div>
+      </section>
+
+      <section class="settings-section">
+        <div class="settings-section-title">
+          <div>
+            <strong>현장주소 관리</strong>
+            <p>현장을 추가하거나 기존 정보를 수정할 수 있습니다.</p>
+          </div>
+          <button id="addSiteBtn" class="settings-primary-small" type="button">+ 주소 추가</button>
+        </div>
+
+        <div class="settings-warning settings-sync-notice">
+          추가하거나 수정한 현장은 <strong>Google Sheets에 즉시 저장</strong>되어 모든 직원에게 표시됩니다.
+        </div>
+
+        <div class="settings-search">
+          <span aria-hidden="true">🔍</span>
+          <input id="settingsSiteSearch" type="search" placeholder="현장명 또는 주소 검색" autocomplete="off" />
+        </div>
+        <div id="settingsSiteList" class="settings-site-list" aria-live="polite"></div>
+      </section>
+
+    </div>
+  </div>
+
+  <div id="siteEditorModal" class="site-editor-modal" hidden aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="siteEditorTitle">
+    <div class="site-editor-sheet">
+      <div class="settings-head">
+        <div>
+          <span class="settings-label">현장주소 관리</span>
+          <h2 id="siteEditorTitle">현장 추가</h2>
+        </div>
+        <button id="closeSiteEditorBtn" class="settings-close" type="button" aria-label="현장 편집 닫기">✕</button>
+      </div>
+
+      <form id="siteEditorForm" class="site-editor-form">
+        <input id="siteIdInput" type="hidden" />
+
+        <label>
+          <span>구분</span>
+          <select id="siteTypeInput" required>
             <option value="general">일반현장</option>
             <option value="coupang">쿠팡</option>
           </select>
         </label>
-        <label class="form-field">
-          <span>주소 <b>필수</b></span>
-          <input id="siteAddressInput" name="address" type="text" maxlength="180" autocomplete="street-address" required placeholder="도로명 주소를 입력하세요" />
+
+        <label>
+          <span>현장명 *</span>
+          <input id="siteNameInput" type="text" maxlength="80" required placeholder="예: 안성다이소" />
         </label>
-        <label class="form-field">
-          <span>기타 메모 <em>선택</em></span>
-          <textarea id="siteNoteInput" name="note" rows="3" maxlength="240" placeholder="예: 2층 진입 후 오른쪽 구석"></textarea>
+
+        <label>
+          <span>주소 *</span>
+          <textarea id="siteAddressInput" rows="3" maxlength="200" required placeholder="도로명 주소를 입력하세요"></textarea>
         </label>
-        <div class="form-actions">
-          <button id="cancelSiteFormBtn" class="btn-secondary" type="button">취소</button>
-          <button id="saveSiteBtn" class="btn-primary" type="submit">등록하기</button>
+
+        <label>
+          <span>기타 메모</span>
+          <input id="siteNoteInput" type="text" maxlength="120" placeholder="층수, 출입 안내 등" />
+        </label>
+
+        <div class="site-editor-actions">
+          <button id="siteSaveBtn" class="site-save-btn" type="submit">저장하기</button>
         </div>
       </form>
     </div>
   </div>
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
-  <script src="./js/app.js" defer></script>
+  <script src="./js/app.js?v=3.6.1" defer></script>
 </body>
 </html>

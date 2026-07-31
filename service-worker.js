@@ -1,11 +1,11 @@
-const CACHE_NAME = 'total-eng-address-v3-6-0';
+const CACHE_NAME = 'total-eng-address-v3-6-1';
 const APP_SHELL = [
   './',
   './index.html',
-  './style.css',
-  './manifest.json',
+  './style.css?v=3.6.1',
+  './manifest.json?v=3.6.1',
   './robots.txt',
-  './js/app.js',
+  './js/app.js?v=3.6.1',
   './data/sites.json',
   './img/logo.png',
   './img/favicon-32.png',
@@ -78,7 +78,13 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  if (url.pathname.endsWith('/data/sites.json')) {
+  const updateSensitiveFile = url.pathname.endsWith('/data/sites.json')
+    || url.pathname.endsWith('/js/app.js')
+    || url.pathname.endsWith('/style.css')
+    || url.pathname.endsWith('/manifest.json')
+    || url.pathname.endsWith('/service-worker.js');
+
+  if (updateSensitiveFile) {
     event.respondWith(networkFirst(request));
     return;
   }
