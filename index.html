@@ -13,12 +13,12 @@
 
   <title>TOTAL ENG 현장주소</title>
 
-  <link rel="manifest" href="./manifest.json?v=3.6.3" />
-  <link rel="stylesheet" href="./style.css?v=3.6.3" />
+  <link rel="manifest" href="./manifest.json?v=3.6.4" />
+  <link rel="stylesheet" href="./style.css?v=3.6.4" />
   <link rel="icon" type="image/png" sizes="32x32" href="./img/favicon-32.png" />
   <link rel="apple-touch-icon" sizes="180x180" href="./img/icon-180.png" />
 </head>
-<body data-app-version="V3.6.3">
+<body data-app-version="V3.6.4">
   <div id="kakaoGuide" class="kakao-guide" hidden aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="kakaoGuideTitle">
     <div class="kakao-guide-card">
       <img class="kakao-guide-logo" src="./img/logo.png" alt="TOTAL ENG" />
@@ -220,7 +220,7 @@
     <main id="siteList" class="site-list"></main>
 
     <footer class="app-footer">
-      <span id="versionText">V3.6.3</span>
+      <span id="versionText">V3.6.4</span>
       <span id="updatedText">업데이트 확인 중</span>
     </footer>
   </div>
@@ -336,7 +336,23 @@
     </div>
   </div>
 
+  <div id="updateNoticeModal" class="update-notice-modal" hidden aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="updateNoticeTitle">
+    <div class="update-notice-card">
+      <span class="update-notice-label">NEW UPDATE</span>
+      <div class="update-notice-version">V3.6.4</div>
+      <h2 id="updateNoticeTitle">앱이 새로워졌어요</h2>
+      <p class="update-notice-intro">이번 업데이트에서 달라진 내용을 확인해 주세요.</p>
+      <ul class="update-notice-list">
+        <li><strong>현장 삭제 기능</strong><span>현장명을 다시 입력해야 삭제되어 실수를 줄였습니다.</span></li>
+        <li><strong>자동백업</strong><span>추가·수정·삭제 전 전체 현장목록을 Google Sheets에 보관합니다.</span></li>
+        <li><strong>더 빠른 실행</strong><span>저장된 목록을 먼저 표시하고 최신 내용을 뒤에서 갱신합니다.</span></li>
+      </ul>
+      <button id="closeUpdateNoticeBtn" class="update-notice-confirm" type="button">확인하고 시작하기</button>
+      <p class="update-notice-once">이 안내는 이번 버전에서 한 번만 표시됩니다.</p>
+    </div>
+  </div>
+
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
-  <script src="./js/app.js?v=3.6.3" defer></script>
+  <script src="./js/app.js?v=3.6.4" defer></script>
 </body>
 </html>

@@ -146,4 +146,27 @@ body.dark .settings-warning{background:#3a2b12;color:#ffe2a8}
 body.dark .settings-sync-notice{background:#153523;color:#b7f7ca}
 .site-save-btn:disabled{opacity:.65;cursor:wait}
 .site-delete-btn:disabled{opacity:.65;cursor:wait}
+
+/* V3.6.4: 업데이트 후 최초 1회 안내 */
+.update-notice-modal[hidden]{display:none!important}
+.update-notice-modal{position:fixed;inset:0;z-index:1700;display:flex;align-items:center;justify-content:center;padding:22px;background:rgba(5,18,42,.76);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.update-notice-card{width:100%;max-width:390px;max-height:88vh;overflow:auto;border-radius:28px;background:#fff;padding:25px 21px 20px;box-shadow:0 24px 70px rgba(0,0,0,.32);animation:updatePop .24s ease}
+.update-notice-label{display:inline-block;border-radius:999px;background:#fff1d8;color:#a85d00;padding:6px 10px;font-size:11px;font-weight:900;letter-spacing:.5px}
+.update-notice-version{margin-top:14px;color:var(--orange);font-size:14px;font-weight:900}
+.update-notice-card h2{margin:5px 0 0;color:var(--blue);font-size:29px;letter-spacing:-1.2px}
+.update-notice-intro{margin:8px 0 0;color:#667085;font-size:14px;line-height:1.55}
+.update-notice-list{display:grid;gap:10px;margin:18px 0;padding:0;list-style:none}
+.update-notice-list li{display:grid;gap:4px;border-radius:16px;background:#f3f7fc;padding:13px 14px}
+.update-notice-list strong{color:var(--blue);font-size:14px}
+.update-notice-list span{color:#475467;font-size:12px;line-height:1.5}
+.update-notice-confirm{width:100%;min-height:54px;border:0;border-radius:16px;background:var(--orange);color:#fff;font-size:16px;font-weight:900}
+.update-notice-once{margin:10px 0 0;text-align:center;color:#98a2b3;font-size:11px}
+body.update-notice-open{overflow:hidden}
+body.dark .update-notice-card{background:#1b2230;color:#fff}
+body.dark .update-notice-card h2{color:#8fbaff}
+body.dark .update-notice-intro,body.dark .update-notice-once{color:#cbd5e1}
+body.dark .update-notice-list li{background:#252e3e}
+body.dark .update-notice-list strong{color:#9fc6ff}
+body.dark .update-notice-list span{color:#d0d5dd}
+@keyframes updatePop{from{opacity:0;transform:translateY(20px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
 @media(max-width:360px){.settings-sheet,.site-editor-sheet{padding-left:14px;padding-right:14px}.settings-section{padding:14px}.settings-section-title{align-items:flex-start}.settings-primary-small{padding:0 10px;font-size:12px}.site-editor-grid{grid-template-columns:1fr}.settings-head h2{font-size:27px}}

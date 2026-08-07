@@ -1,13 +1,14 @@
 'use strict';
 
-const APP_VERSION = 'V3.6.3';
+const APP_VERSION = 'V3.6.4';
 const API_URL = 'https://script.google.com/macros/s/AKfycbz0X-gA6i7Y66zCArwwQ2ciCKOq-V4jLwo3_x7-2ZDdPUV5iWMfaoGJzDslmpEaE1Q8/exec';
 const STORAGE_KEYS = {
   favorites: 'tea_favorites',
   recentVisits: 'tea_recentVisits',
   recentSearches: 'tea_recentSearches',
   darkMode: 'tea_darkMode',
-  siteCache: 'tea_siteCache_v2'
+  siteCache: 'tea_siteCache_v2',
+  seenUpdateVersion: 'tea_seenUpdateVersion'
 };
 
 let sites = [];
@@ -71,7 +72,9 @@ const els = {
   vehicleAppSteps: $('vehicleAppSteps'),
   openVehicleAppBtn: $('openVehicleAppBtn'),
   copyVehicleAddressBtn: $('copyVehicleAddressBtn'),
-  closeVehicleAppBtn: $('closeVehicleAppBtn')
+  closeVehicleAppBtn: $('closeVehicleAppBtn'),
+  updateNoticeModal: $('updateNoticeModal'),
+  closeUpdateNoticeBtn: $('closeUpdateNoticeBtn')
 };
 
 function readStoredArray(key) {
@@ -1017,6 +1020,32 @@ function applyDarkMode(enabled) {
   localStorage.setItem(STORAGE_KEYS.darkMode, enabled ? '1' : '0');
 }
 
+function showUpdateNoticeOnce() {
+  if (!els.updateNoticeModal) return;
+  try {
+    if (localStorage.getItem(STORAGE_KEYS.seenUpdateVersion) === APP_VERSION) return;
+  } catch (error) {
+    console.warn('업데이트 확인 기록을 읽지 못했습니다.', error);
+  }
+
+  els.updateNoticeModal.hidden = false;
+  els.updateNoticeModal.setAttribute('aria-hidden', 'false');
+  document.body.classList.add('update-notice-open');
+  window.setTimeout(() => els.closeUpdateNoticeBtn?.focus(), 50);
+}
+
+function closeUpdateNotice() {
+  if (!els.updateNoticeModal || els.updateNoticeModal.hidden) return;
+  els.updateNoticeModal.hidden = true;
+  els.updateNoticeModal.setAttribute('aria-hidden', 'true');
+  document.body.classList.remove('update-notice-open');
+  try {
+    localStorage.setItem(STORAGE_KEYS.seenUpdateVersion, APP_VERSION);
+  } catch (error) {
+    console.warn('업데이트 확인 기록을 저장하지 못했습니다.', error);
+  }
+}
+
 function initEvents() {
   els.searchInput.addEventListener('input', render);
   els.searchInput.addEventListener('keydown', (event) => {
@@ -1068,6 +1097,10 @@ function initEvents() {
 
   document.addEventListener('keydown', (event) => {
     if (event.key !== 'Escape') return;
+    if (els.updateNoticeModal && !els.updateNoticeModal.hidden) {
+      closeUpdateNotice();
+      return;
+    }
     if (els.siteEditorModal && !els.siteEditorModal.hidden) {
       closeSiteEditor();
       return;
@@ -1102,6 +1135,10 @@ function initEvents() {
   });
   els.siteEditorForm?.addEventListener('submit', saveSiteFromForm);
   els.deleteSiteBtn?.addEventListener('click', deleteCurrentSite);
+  els.closeUpdateNoticeBtn?.addEventListener('click', closeUpdateNotice);
+  els.updateNoticeModal?.addEventListener('click', (event) => {
+    if (event.target === els.updateNoticeModal) closeUpdateNotice();
+  });
 
   els.refreshBtn.addEventListener('click', () => loadData({
     skipCache: true,
@@ -1132,7 +1169,7 @@ function registerServiceWorker() {
 
   window.addEventListener('load', async () => {
     try {
-      const registration = await navigator.serviceWorker.register('./service-worker.js?v=3.6.3', {
+      const registration = await navigator.serviceWorker.register('./service-worker.js?v=3.6.4', {
         scope: './',
         updateViaCache: 'none'
       });
@@ -1151,6 +1188,7 @@ function initialize() {
   updateInstallButton();
   if (isKakaoInAppBrowser()) showKakaoGuide();
   loadData();
+  window.setTimeout(showUpdateNoticeOnce, 650);
 }
 
 initialize();
