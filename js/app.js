@@ -1,7 +1,7 @@
 'use strict';
 
-const APP_VERSION = 'V3.6.2';
-const API_URL = 'https://script.google.com/macros/s/AKfycbyF2FyCA9Qqbqi90BCD-jE_LE_e-og2ty5sBOSgxVWydSCiB9fv3qOpmNpwsUlVxR54/exec';
+const APP_VERSION = 'V3.6.3';
+const API_URL = 'https://script.google.com/macros/s/AKfycbz0X-gA6i7Y66zCArwwQ2ciCKOq-V4jLwo3_x7-2ZDdPUV5iWMfaoGJzDslmpEaE1Q8/exec';
 const STORAGE_KEYS = {
   favorites: 'tea_favorites',
   recentVisits: 'tea_recentVisits',
@@ -1132,7 +1132,7 @@ function registerServiceWorker() {
 
   window.addEventListener('load', async () => {
     try {
-      const registration = await navigator.serviceWorker.register('./service-worker.js?v=3.6.2', {
+      const registration = await navigator.serviceWorker.register('./service-worker.js?v=3.6.3', {
         scope: './',
         updateViaCache: 'none'
       });

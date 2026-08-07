@@ -1,6 +1,6 @@
 {
   "meta": {
-    "version": "V3.6.2",
+    "version": "V3.6.3",
     "updatedAt": "2026-07-31",
     "sourceFile": "address.xlsx",
     "generalColumns": "B=현장명, C=주소, D=사무실 거리, E=톨비, F=주유비, G=기타, H=Warranty, I=Page",
@@ -973,11 +973,37 @@
       "id": 75,
       "type": "general",
       "name": "TEST",
-      "address": "인천 서구 청라에메랄드로 76번길 14",
+      "address": "이천시 백사면 원적로 774번길 231",
       "distance": "",
       "toll": "",
       "fuel": "",
       "note": "TEST",
+      "warranty": "",
+      "page": "",
+      "region": ""
+    },
+    {
+      "id": 76,
+      "type": "general",
+      "name": "LGL 뉴성진 크림",
+      "address": "경기도 이천시 호법면 덕평로 257-21 2층",
+      "distance": "",
+      "toll": "",
+      "fuel": "",
+      "note": "",
+      "warranty": "",
+      "page": "",
+      "region": ""
+    },
+    {
+      "id": 77,
+      "type": "general",
+      "name": "핌즈",
+      "address": "인천시 서구 원석로 196 로지스허브 8층",
+      "distance": "",
+      "toll": "",
+      "fuel": "",
+      "note": "",
       "warranty": "",
       "page": "",
       "region": ""
