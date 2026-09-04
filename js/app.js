@@ -1,6 +1,6 @@
 'use strict';
 
-const APP_VERSION = 'V3.6.4';
+const APP_VERSION = 'V3.6.5';
 const API_URL = 'https://script.google.com/macros/s/AKfycbz0X-gA6i7Y66zCArwwQ2ciCKOq-V4jLwo3_x7-2ZDdPUV5iWMfaoGJzDslmpEaE1Q8/exec';
 const STORAGE_KEYS = {
   favorites: 'tea_favorites',
@@ -70,6 +70,7 @@ const els = {
   vehicleAppMessage: $('vehicleAppMessage'),
   vehicleAppAddress: $('vehicleAppAddress'),
   vehicleAppSteps: $('vehicleAppSteps'),
+  shareVehicleAddressBtn: $('shareVehicleAddressBtn'),
   openVehicleAppBtn: $('openVehicleAppBtn'),
   copyVehicleAddressBtn: $('copyVehicleAddressBtn'),
   closeVehicleAppBtn: $('closeVehicleAppBtn'),
@@ -551,9 +552,14 @@ async function openVehicleAppGuide(id, type) {
     : '아래 주소를 길게 눌러 복사해 주세요.';
   els.vehicleAppAddress.textContent = site.address;
   els.vehicleAppSteps.innerHTML = `
-    <li><strong>${config.name}</strong> 앱을 여세요.</li>
-    <li>지도 또는 목적지 검색창을 길게 눌러 <strong>붙여넣기</strong> 하세요.</li>
-    <li>차량 연동 메뉴에서 <strong>차량으로 전송</strong>을 선택하세요.</li>`;
+    <li><strong>주소 공유하기</strong>를 누르세요.</li>
+    <li>공유 목록에 <strong>${config.name}</strong>가 보이면 선택하세요.</li>
+    <li>목적지를 확인한 뒤 <strong>내 차로 전송</strong>을 선택하세요.</li>`;
+
+  if (els.shareVehicleAddressBtn) {
+    els.shareVehicleAddressBtn.textContent = `${config.name}로 주소 공유하기`;
+    els.shareVehicleAddressBtn.hidden = false;
+  }
 
   if (isAndroid()) {
     els.openVehicleAppBtn.textContent = `${config.name} 앱 열기`;
@@ -566,7 +572,7 @@ async function openVehicleAppGuide(id, type) {
   els.vehicleAppModal.hidden = false;
   els.vehicleAppModal.setAttribute('aria-hidden', 'false');
   document.body.classList.add('vehicle-app-open');
-  window.setTimeout(() => els.openVehicleAppBtn?.focus(), 50);
+  window.setTimeout(() => els.shareVehicleAddressBtn?.focus(), 50);
 }
 
 function closeVehicleAppGuide() {
@@ -581,6 +587,30 @@ async function copyVehicleAddress() {
   if (!vehicleAppState) return;
   const copied = await copyText(vehicleAppState.site.address);
   toast(copied ? '현장주소를 다시 복사했습니다.' : '주소 복사에 실패했습니다.');
+}
+
+async function shareVehicleAddress() {
+  if (!vehicleAppState) return;
+  const { site, config } = vehicleAppState;
+  const shareData = {
+    title: `${site.name} 현장주소`,
+    text: `${site.name}\n${site.address}`
+  };
+
+  if (navigator.share) {
+    try {
+      await navigator.share(shareData);
+      toast('주소 공유 화면을 열었습니다.');
+      return;
+    } catch (error) {
+      if (error?.name === 'AbortError') return;
+      console.warn('주소 공유를 시작하지 못했습니다.', error);
+    }
+  }
+
+  const copied = await copyText(site.address);
+  toast(copied ? '주소를 복사하고 차량 앱을 엽니다.' : '차량 앱을 엽니다.');
+  window.setTimeout(launchVehicleApp, 350);
 }
 
 function launchVehicleApp() {
@@ -1089,6 +1119,7 @@ function initEvents() {
   });
 
   els.openVehicleAppBtn?.addEventListener('click', launchVehicleApp);
+  els.shareVehicleAddressBtn?.addEventListener('click', shareVehicleAddress);
   els.copyVehicleAddressBtn?.addEventListener('click', copyVehicleAddress);
   els.closeVehicleAppBtn?.addEventListener('click', closeVehicleAppGuide);
   els.vehicleAppModal?.addEventListener('click', (event) => {
@@ -1169,7 +1200,7 @@ function registerServiceWorker() {
 
   window.addEventListener('load', async () => {
     try {
-      const registration = await navigator.serviceWorker.register('./service-worker.js?v=3.6.4', {
+      const registration = await navigator.serviceWorker.register('./service-worker.js?v=3.6.5', {
         scope: './',
         updateViaCache: 'none'
       });
