@@ -1,6 +1,6 @@
 'use strict';
 
-const APP_VERSION = 'V3.6.6';
+const APP_VERSION = 'V3.6.7';
 const API_URL = 'https://script.google.com/macros/s/AKfycbz0X-gA6i7Y66zCArwwQ2ciCKOq-V4jLwo3_x7-2ZDdPUV5iWMfaoGJzDslmpEaE1Q8/exec';
 const STORAGE_KEYS = {
   favorites: 'tea_favorites',
@@ -20,7 +20,6 @@ let deferredInstallPrompt = null;
 let favorites = readStoredArray(STORAGE_KEYS.favorites);
 let recentVisits = readStoredArray(STORAGE_KEYS.recentVisits);
 let recentSearches = readStoredArray(STORAGE_KEYS.recentSearches);
-let vehicleAppState = null;
 
 const $ = (id) => document.getElementById(id);
 const els = {
@@ -65,15 +64,6 @@ const els = {
   kakaoAndroidFallback: $('kakaoAndroidFallback'),
   copyAppLinkBtn: $('copyAppLinkBtn'),
   continueInKakaoBtn: $('continueInKakaoBtn'),
-  vehicleAppModal: $('vehicleAppModal'),
-  vehicleAppTitle: $('vehicleAppTitle'),
-  vehicleAppMessage: $('vehicleAppMessage'),
-  vehicleAppAddress: $('vehicleAppAddress'),
-  vehicleAppSteps: $('vehicleAppSteps'),
-  shareVehicleAddressBtn: $('shareVehicleAddressBtn'),
-  openVehicleAppBtn: $('openVehicleAppBtn'),
-  copyVehicleAddressBtn: $('copyVehicleAddressBtn'),
-  closeVehicleAppBtn: $('closeVehicleAppBtn'),
   updateNoticeModal: $('updateNoticeModal'),
   closeUpdateNoticeBtn: $('closeUpdateNoticeBtn')
 };
@@ -272,8 +262,34 @@ function updateMeta() {
   if (els.updatedText) els.updatedText.textContent = `업데이트 ${meta.updatedAt || '-'}`;
 }
 
+function normalizeSearchText(value) {
+  return String(value || '')
+    .normalize('NFKC')
+    .toLowerCase()
+    .replace(/[^0-9a-z가-힣]/g, '');
+}
+
+function matchesSiteSearch(site, query) {
+  const rawQuery = String(query || '').trim();
+  if (!rawQuery) return true;
+
+  const searchTarget = normalizeSearchText([
+    site.name,
+    site.address,
+    site.note,
+    site.region,
+    site.type === 'coupang' ? '쿠팡' : '일반현장'
+  ].join(' '));
+  const tokens = rawQuery
+    .split(/\s+/)
+    .map(normalizeSearchText)
+    .filter(Boolean);
+
+  return tokens.every((token) => searchTarget.includes(token));
+}
+
 function filteredSites() {
-  const keyword = (els.searchInput.value || '').trim().toLowerCase();
+  const keyword = (els.searchInput.value || '').trim();
   let data = [...sites];
 
   if (currentType === 'general') data = data.filter((site) => site.type === 'general');
@@ -282,12 +298,7 @@ function filteredSites() {
   if (currentType === 'recent') data = data.filter((site) => recentVisits.includes(site.id));
 
   if (keyword) {
-    data = data.filter((site) => (
-      [site.name, site.address, site.note]
-        .join(' ')
-        .toLowerCase()
-        .includes(keyword)
-    ));
+    data = data.filter((site) => matchesSiteSearch(site, keyword));
   }
 
   if (currentType === 'recent') {
@@ -340,8 +351,6 @@ function siteCard(site) {
       <button type="button" data-action="map" data-map="tmap" data-id="${id}">🚗 티맵</button>
       <button type="button" data-action="map" data-map="kakao" data-id="${id}">카카오내비</button>
       <button type="button" data-action="map" data-map="naver" data-id="${id}">네이버지도</button>
-      <button type="button" data-action="vehicle-app" data-vehicle-app="hyundai" data-id="${id}">현대차</button>
-      <button type="button" data-action="vehicle-app" data-vehicle-app="kia" data-id="${id}">기아차</button>
     </div>
   </article>`;
 }
@@ -406,8 +415,6 @@ function openDetail(id) {
       <button class="btn-tmap" type="button" data-action="map" data-map="tmap" data-id="${numericId}">🚗 티맵</button>
       <button class="btn-kakao" type="button" data-action="map" data-map="kakao" data-id="${numericId}">카카오내비</button>
       <button class="btn-naver" type="button" data-action="map" data-map="naver" data-id="${numericId}">네이버지도</button>
-      <button class="btn-hyundai" type="button" data-action="vehicle-app" data-vehicle-app="hyundai" data-id="${numericId}">현대차</button>
-      <button class="btn-kia" type="button" data-action="vehicle-app" data-vehicle-app="kia" data-id="${numericId}">기아차</button>
     </div>`;
 
   els.detailModal.classList.add('show');
@@ -503,136 +510,6 @@ function openTmap(site) {
 }
 
 
-const VEHICLE_APPS = {
-  hyundai: {
-    name: '마이현대',
-    shortName: '현대차',
-    androidPackage: 'com.hyundai.oneapp.kr',
-    playStoreUrl: 'https://play.google.com/store/apps/details?id=com.hyundai.oneapp.kr',
-    appStoreUrl: 'https://apps.apple.com/kr/app/id6714472723'
-  },
-  kia: {
-    name: 'Kia App',
-    shortName: '기아차',
-    androidPackage: 'com.kia.oneapp.kr',
-    playStoreUrl: 'https://play.google.com/store/apps/details?id=com.kia.oneapp.kr',
-    appStoreUrl: 'https://apps.apple.com/kr/app/id6590612538'
-  }
-};
-
-async function copyText(value) {
-  try {
-    await navigator.clipboard.writeText(value);
-    return true;
-  } catch (error) {
-    const textarea = document.createElement('textarea');
-    textarea.value = value;
-    textarea.setAttribute('readonly', '');
-    textarea.style.position = 'fixed';
-    textarea.style.opacity = '0';
-    document.body.appendChild(textarea);
-    textarea.select();
-    const copied = document.execCommand('copy');
-    textarea.remove();
-    return copied;
-  }
-}
-
-async function openVehicleAppGuide(id, type) {
-  const site = siteById(id);
-  const config = VEHICLE_APPS[type];
-  if (!site || !config || !els.vehicleAppModal) return;
-
-  vehicleAppState = { site, type, config };
-  const copied = await copyText(site.address);
-
-  els.vehicleAppTitle.textContent = `${config.name}로 보내기`;
-  els.vehicleAppMessage.textContent = copied
-    ? '현장주소를 복사해 두었습니다.'
-    : '아래 주소를 길게 눌러 복사해 주세요.';
-  els.vehicleAppAddress.textContent = site.address;
-  els.vehicleAppSteps.innerHTML = `
-    <li><strong>주소 공유하기</strong>를 누르세요.</li>
-    <li>공유 목록에 <strong>${config.name}</strong>가 보이면 선택하세요.</li>
-    <li>목적지를 확인한 뒤 <strong>내 차로 전송</strong>을 선택하세요.</li>`;
-
-  if (els.shareVehicleAddressBtn) {
-    els.shareVehicleAddressBtn.textContent = `${config.name}로 주소 공유하기`;
-    els.shareVehicleAddressBtn.hidden = false;
-  }
-
-  if (isAndroid()) {
-    els.openVehicleAppBtn.textContent = `${config.name} 앱 열기`;
-  } else if (isIos()) {
-    els.openVehicleAppBtn.textContent = `${config.name} App Store에서 열기`;
-  } else {
-    els.openVehicleAppBtn.textContent = `${config.name} 설치 페이지 열기`;
-  }
-
-  els.vehicleAppModal.hidden = false;
-  els.vehicleAppModal.setAttribute('aria-hidden', 'false');
-  document.body.classList.add('vehicle-app-open');
-  window.setTimeout(() => els.shareVehicleAddressBtn?.focus(), 50);
-}
-
-function closeVehicleAppGuide() {
-  if (!els.vehicleAppModal) return;
-  els.vehicleAppModal.hidden = true;
-  els.vehicleAppModal.setAttribute('aria-hidden', 'true');
-  document.body.classList.remove('vehicle-app-open');
-  vehicleAppState = null;
-}
-
-async function copyVehicleAddress() {
-  if (!vehicleAppState) return;
-  const copied = await copyText(vehicleAppState.site.address);
-  toast(copied ? '현장주소를 다시 복사했습니다.' : '주소 복사에 실패했습니다.');
-}
-
-async function shareVehicleAddress() {
-  if (!vehicleAppState) return;
-  const { site, config } = vehicleAppState;
-  const shareData = {
-    title: `${site.name} 현장주소`,
-    text: `${site.name}\n${site.address}`
-  };
-
-  if (navigator.share) {
-    try {
-      await navigator.share(shareData);
-      toast('주소 공유 화면을 열었습니다.');
-      return;
-    } catch (error) {
-      if (error?.name === 'AbortError') return;
-      console.warn('주소 공유를 시작하지 못했습니다.', error);
-    }
-  }
-
-  const copied = await copyText(site.address);
-  toast(copied ? '주소를 복사하고 차량 앱을 엽니다.' : '차량 앱을 엽니다.');
-  window.setTimeout(launchVehicleApp, 350);
-}
-
-function launchVehicleApp() {
-  if (!vehicleAppState) return;
-  const { config } = vehicleAppState;
-
-  if (isAndroid()) {
-    const fallbackUrl = encodeURIComponent(config.playStoreUrl);
-    window.location.href = `intent:#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;package=${config.androidPackage};S.browser_fallback_url=${fallbackUrl};end`;
-    return;
-  }
-
-  if (isIos()) {
-    // 현대·기아 앱은 공개된 웹 딥링크가 확인되지 않아 App Store 페이지로 연결합니다.
-    // 앱이 설치되어 있으면 App Store의 “열기” 버튼을 눌러 실행할 수 있습니다.
-    window.location.href = config.appStoreUrl;
-    return;
-  }
-
-  window.open(config.playStoreUrl, '_blank', 'noopener,noreferrer');
-}
-
 function openMap(id, type) {
   const site = siteById(id);
   if (!site) return;
@@ -684,12 +561,6 @@ function handleAction(event) {
     return;
   }
 
-  if (action === 'vehicle-app') {
-    event.stopPropagation();
-    openVehicleAppGuide(id, actionTarget.dataset.vehicleApp);
-    return;
-  }
-
   if (action === 'open-detail') {
     openDetail(id);
   }
@@ -719,11 +590,8 @@ function closeSettings() {
 
 function renderSettingsSiteList() {
   if (!els.settingsSiteList) return;
-  const keyword = String(els.settingsSiteSearch?.value || '').trim().toLowerCase();
-  const filtered = sites.filter((site) => {
-    if (!keyword) return true;
-    return `${site.name} ${site.address}`.toLowerCase().includes(keyword);
-  });
+  const keyword = String(els.settingsSiteSearch?.value || '').trim();
+  const filtered = sites.filter((site) => matchesSiteSearch(site, keyword));
 
   if (!filtered.length) {
     els.settingsSiteList.innerHTML = '<div class="settings-empty">해당 현장을 찾을 수 없습니다.</div>';
@@ -779,6 +647,30 @@ async function saveSiteFromForm(event) {
   if (!name || !address) {
     toast('현장명과 주소를 입력해 주세요.');
     return;
+  }
+
+  const duplicateSites = sites.filter((site) => {
+    if (Number(site.id) === idValue) return false;
+    const sameName = normalizeSearchText(site.name) === normalizeSearchText(name);
+    const sameAddress = normalizeSearchText(site.address) === normalizeSearchText(address);
+    return sameName || sameAddress;
+  });
+
+  if (duplicateSites.length) {
+    const duplicateNames = duplicateSites
+      .slice(0, 3)
+      .map((site) => `• ${site.name}\n  ${site.address}`)
+      .join('\n');
+    const moreText = duplicateSites.length > 3
+      ? `\n외 ${duplicateSites.length - 3}개`
+      : '';
+    const continueSave = window.confirm(
+      `같은 현장명 또는 주소가 이미 등록되어 있습니다.\n\n${duplicateNames}${moreText}\n\n그래도 저장할까요?`
+    );
+    if (!continueSave) {
+      toast('중복 가능성이 있어 저장을 취소했습니다.');
+      return;
+    }
   }
 
   els.siteSaveBtn.disabled = true;
@@ -1118,14 +1010,6 @@ function initEvents() {
     if (event.target === els.detailModal) closeDetail();
   });
 
-  els.openVehicleAppBtn?.addEventListener('click', launchVehicleApp);
-  els.shareVehicleAddressBtn?.addEventListener('click', shareVehicleAddress);
-  els.copyVehicleAddressBtn?.addEventListener('click', copyVehicleAddress);
-  els.closeVehicleAppBtn?.addEventListener('click', closeVehicleAppGuide);
-  els.vehicleAppModal?.addEventListener('click', (event) => {
-    if (event.target === els.vehicleAppModal) closeVehicleAppGuide();
-  });
-
   document.addEventListener('keydown', (event) => {
     if (event.key !== 'Escape') return;
     if (els.updateNoticeModal && !els.updateNoticeModal.hidden) {
@@ -1138,10 +1022,6 @@ function initEvents() {
     }
     if (els.settingsModal && !els.settingsModal.hidden) {
       closeSettings();
-      return;
-    }
-    if (els.vehicleAppModal && !els.vehicleAppModal.hidden) {
-      closeVehicleAppGuide();
       return;
     }
     if (els.detailModal.classList.contains('show')) closeDetail();
@@ -1207,7 +1087,7 @@ function registerServiceWorker() {
 
   window.addEventListener('load', async () => {
     try {
-      const registration = await navigator.serviceWorker.register('./service-worker.js?v=3.6.6', {
+      const registration = await navigator.serviceWorker.register('./service-worker.js?v=3.6.7', {
         scope: './',
         updateViaCache: 'none'
       });
