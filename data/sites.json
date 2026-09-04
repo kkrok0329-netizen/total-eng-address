@@ -1,10 +1,8 @@
 {
   "meta": {
-    "version": "V3.6.5",
-    "updatedAt": "2026-07-31",
-    "sourceFile": "address.xlsx",
-    "generalColumns": "B=현장명, C=주소, D=사무실 거리, E=톨비, F=주유비, G=기타, H=Warranty, I=Page",
-    "coupangColumns": "M=NO, N=현장명, O=주소, P=사무실 거리, Q=톨비, R=주유비, S=기타, T=Warranty, U=Page/지역"
+    "version": "V3.6.6",
+    "updatedAt": "2026-09-02",
+    "source": "Google Sheets 동기화 백업"
   },
   "sites": [
     {
@@ -286,7 +284,7 @@
       "name": "야탑 1",
       "address": "분당구 야탑동 403",
       "distance": 39,
-      "toll": " ",
+      "toll": "",
       "fuel": 6824,
       "note": "3층",
       "warranty": "2027-07-16",
@@ -398,19 +396,6 @@
       "region": ""
     },
     {
-      "id": 31,
-      "type": "coupang",
-      "name": "군포1",
-      "address": "안산시 상록구 사사동 119-18 2층",
-      "distance": 65,
-      "toll": 2000,
-      "fuel": 11453,
-      "note": "2층",
-      "warranty": "",
-      "page": "서.경",
-      "region": "서.경"
-    },
-    {
       "id": 32,
       "type": "general",
       "name": "LX판토스 더파운더즈 이천센터",
@@ -431,7 +416,7 @@
       "distance": 78,
       "toll": 2300,
       "fuel": 12927,
-      "note": "8층",
+      "note": "8층 주차 옥상",
       "warranty": "",
       "page": "서.경",
       "region": "서.경"
@@ -478,7 +463,7 @@
     {
       "id": 37,
       "type": "coupang",
-      "name": "대전",
+      "name": "대전3",
       "address": "세종시 부강면 문곡리 135-1",
       "distance": 107,
       "toll": 4900,
@@ -530,7 +515,7 @@
     {
       "id": 41,
       "type": "coupang",
-      "name": "대구",
+      "name": "동대구",
       "address": "대구광역시 수성구 대흥동 869",
       "distance": 245,
       "toll": 12000,
@@ -970,26 +955,13 @@
       "region": ""
     },
     {
-      "id": 75,
-      "type": "general",
-      "name": "TEST",
-      "address": "이천시 백사면 원적로 774번길 231",
-      "distance": "",
-      "toll": "",
-      "fuel": "",
-      "note": "TEST",
-      "warranty": "",
-      "page": "",
-      "region": ""
-    },
-    {
       "id": 76,
       "type": "general",
       "name": "LGL 뉴성진 크림",
       "address": "경기도 이천시 호법면 덕평로 257-21 2층",
-      "distance": "",
+      "distance": 24,
       "toll": "",
-      "fuel": "",
+      "fuel": 3928,
       "note": "",
       "warranty": "",
       "page": "",
@@ -1000,10 +972,23 @@
       "type": "general",
       "name": "핌즈",
       "address": "인천시 서구 원석로 196 로지스허브 8층",
+      "distance": 93,
+      "toll": 3700,
+      "fuel": 16380,
+      "note": "",
+      "warranty": "",
+      "page": "",
+      "region": ""
+    },
+    {
+      "id": 78,
+      "type": "general",
+      "name": "부산 농심",
+      "address": "부산 강서구 녹산산단261로73번길 48",
       "distance": "",
       "toll": "",
       "fuel": "",
-      "note": "",
+      "note": "신축건물",
       "warranty": "",
       "page": "",
       "region": ""

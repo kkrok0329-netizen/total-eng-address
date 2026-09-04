@@ -1,11 +1,11 @@
-const CACHE_NAME = 'total-eng-address-v3-6-5';
+const CACHE_NAME = 'total-eng-address-v3-6-6';
 const APP_SHELL = [
   './',
   './index.html',
-  './style.css?v=3.6.5',
-  './manifest.json?v=3.6.5',
+  './style.css?v=3.6.6',
+  './manifest.json?v=3.6.6',
   './robots.txt',
-  './js/app.js?v=3.6.5',
+  './js/app.js?v=3.6.6',
   './data/sites.json',
   './img/logo.png',
   './img/favicon-32.png',
@@ -47,7 +47,7 @@ async function cacheResponse(request, response) {
 
 async function networkFirst(request, fallbackUrl) {
   try {
-    const response = await fetch(request);
+    const response = await fetch(request, { cache: 'no-store' });
     return cacheResponse(request, response);
   } catch (error) {
     const cached = await caches.match(request, { ignoreSearch: true });
@@ -90,4 +90,8 @@ self.addEventListener('fetch', (event) => {
   }
 
   event.respondWith(cacheFirst(request));
+});
+
+self.addEventListener('message', (event) => {
+  if (event.data?.type === 'SKIP_WAITING') self.skipWaiting();
 });

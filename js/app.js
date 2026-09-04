@@ -1,6 +1,6 @@
 'use strict';
 
-const APP_VERSION = 'V3.6.5';
+const APP_VERSION = 'V3.6.6';
 const API_URL = 'https://script.google.com/macros/s/AKfycbz0X-gA6i7Y66zCArwwQ2ciCKOq-V4jLwo3_x7-2ZDdPUV5iWMfaoGJzDslmpEaE1Q8/exec';
 const STORAGE_KEYS = {
   favorites: 'tea_favorites',
@@ -1198,12 +1198,22 @@ function initEvents() {
 function registerServiceWorker() {
   if (!('serviceWorker' in navigator)) return;
 
+  let reloadingForUpdate = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (reloadingForUpdate) return;
+    reloadingForUpdate = true;
+    window.location.reload();
+  });
+
   window.addEventListener('load', async () => {
     try {
-      const registration = await navigator.serviceWorker.register('./service-worker.js?v=3.6.5', {
+      const registration = await navigator.serviceWorker.register('./service-worker.js?v=3.6.6', {
         scope: './',
         updateViaCache: 'none'
       });
+      if (registration.waiting) {
+        registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+      }
       registration.update().catch(() => {});
     } catch (error) {
       console.warn('서비스 워커 등록 실패', error);
