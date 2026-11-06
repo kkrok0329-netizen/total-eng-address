@@ -13,12 +13,12 @@
 
   <title>TOTAL ENG 현장주소</title>
 
-  <link rel="manifest" href="./manifest.json?v=3.6.7" />
-  <link rel="stylesheet" href="./style.css?v=3.6.7" />
+  <link rel="manifest" href="./manifest.json?v=3.7.0" />
+  <link rel="stylesheet" href="./style.css?v=3.7.0" />
   <link rel="icon" type="image/png" sizes="32x32" href="./img/favicon-32.png" />
   <link rel="apple-touch-icon" sizes="180x180" href="./img/icon-180.png" />
 </head>
-<body data-app-version="V3.6.7">
+<body data-app-version="V3.7.0">
   <div id="kakaoGuide" class="kakao-guide" hidden aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="kakaoGuideTitle">
     <div class="kakao-guide-card">
       <img class="kakao-guide-logo" src="./img/logo.png" alt="TOTAL ENG" />
@@ -194,6 +194,11 @@
       <div id="headerCount" class="header-count" aria-live="polite">불러오는 중...</div>
     </header>
 
+    <nav class="app-sections" aria-label="앱 메뉴">
+      <button id="showSitesBtn" class="selected" type="button" aria-pressed="true">현장주소</button>
+      <button id="showContactsBtn" type="button" aria-pressed="false">공용 주소록</button>
+    </nav>
+    <div id="sitesView">
     <section class="search-wrap" aria-label="현장 검색">
       <div class="search-box">
         <span aria-hidden="true">🔍</span>
@@ -218,9 +223,22 @@
     </section>
 
     <main id="siteList" class="site-list"></main>
+    </div>
+    <section id="contactsView" class="contacts-view" hidden aria-label="공용 주소록">
+      <div class="search-box"><span aria-hidden="true">🔍</span><input id="contactSearch" type="search" aria-label="연락처 검색" placeholder="이름·현장·직책·업체·번호 검색" autocomplete="off" /></div>
+      <nav id="contactFilters" class="contact-filters" aria-label="연락처 분류">
+        <button type="button" data-category="전체" class="selected" aria-pressed="true">전체</button>
+        <button type="button" data-category="우리회사" aria-pressed="false">우리회사</button>
+        <button type="button" data-category="현장" aria-pressed="false">현장</button>
+        <button type="button" data-category="협력사" aria-pressed="false">협력사</button>
+      </nav>
+      <div class="contacts-toolbar"><span id="contactCount">전체 0명</span><button id="addContactBtn" type="button">+ 연락처 추가</button></div>
+      <div class="contacts-toolbar"><p id="contactStatus" role="status" aria-live="polite">주소록 연결 대기</p><button id="refreshContactsBtn" type="button">새로고침</button></div>
+      <div id="contactList"></div>
+    </section>
 
     <footer class="app-footer">
-      <span id="versionText">V3.6.7</span>
+      <span id="versionText">V3.7.0</span>
       <span id="updatedText">업데이트 확인 중</span>
     </footer>
   </div>
@@ -243,6 +261,8 @@
       </div>
 
       <section class="settings-section">
+        <p id="syncStatus" role="status" aria-live="polite">최신 목록 확인 중…</p>
+        <button id="checkUpdateBtn" class="settings-primary-small" type="button">업데이트 확인</button>
         <div class="settings-row">
           <div>
             <strong>다크모드</strong>
@@ -325,13 +345,13 @@
   <div id="updateNoticeModal" class="update-notice-modal" hidden aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="updateNoticeTitle">
     <div class="update-notice-card">
       <span class="update-notice-label">NEW UPDATE</span>
-      <div class="update-notice-version">V3.6.7</div>
+      <div class="update-notice-version">V3.7.0</div>
       <h2 id="updateNoticeTitle">앱이 새로워졌어요</h2>
       <p class="update-notice-intro">이번 업데이트에서 달라진 내용을 확인해 주세요.</p>
       <ul class="update-notice-list">
-        <li><strong>더 편한 검색</strong><span>띄어쓰기와 단어 순서가 달라도 지역·현장명·주소를 쉽게 찾습니다.</span></li>
-        <li><strong>중복 등록 경고</strong><span>같은 현장명이나 주소가 있으면 저장 전에 알려드립니다.</span></li>
-        <li><strong>불필요한 버튼 정리</strong><span>지원되지 않는 현대차·기아차 버튼을 제거했습니다.</span></li>
+        <li><strong>공용 주소록</strong><span>우리회사·현장·협력사 연락처를 모든 직원이 함께 관리합니다.</span></li>
+        <li><strong>다양한 연락처 검색</strong><span>이름·직책·현장명·업체·전화번호·메모로 검색할 수 있습니다.</span></li>
+        <li><strong>전화·문자 바로가기</strong><span>전화 또는 문자 앱으로 바로 연결됩니다. 연락처 수정·삭제 전 정보는 이력에 보관합니다.</span></li>
       </ul>
       <button id="closeUpdateNoticeBtn" class="update-notice-confirm" type="button">확인하고 시작하기</button>
       <p class="update-notice-once">이 안내는 이번 버전에서 한 번만 표시됩니다.</p>
@@ -339,6 +359,7 @@
   </div>
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
-  <script src="./js/app.js?v=3.6.7" defer></script>
+  <script src="./js/app.js?v=3.7.0" defer></script>
+  <script src="./js/contacts.js?v=3.7.0" defer></script>
 </body>
 </html>

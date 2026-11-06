@@ -1,8 +1,8 @@
 {
   "meta": {
-    "version": "V3.6.7",
-    "updatedAt": "2026-09-02",
-    "source": "Google Sheets 동기화 백업"
+    "version": "V3.6.8",
+    "updatedAt": "2026-10-15",
+    "source": "Google Sheets"
   },
   "sites": [
     {
@@ -295,7 +295,7 @@
       "id": 23,
       "type": "general",
       "name": "APR",
-      "address": "큐브인더스트리얼 평택석정센터",
+      "address": "경기 평택시 포승읍 석정리 869-2",
       "distance": 104,
       "toll": 2000,
       "fuel": 18268,
@@ -373,7 +373,7 @@
       "id": 29,
       "type": "coupang",
       "name": "화성 2",
-      "address": "경기도 화성시 안녕동 146-38번지",
+      "address": "경기도 화성시 병점구 안녕남로 181",
       "distance": 69,
       "toll": 6200,
       "fuel": 11937,

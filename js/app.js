@@ -1,6 +1,6 @@
 'use strict';
 
-const APP_VERSION = 'V3.6.7';
+const APP_VERSION = 'V3.7.0';
 const API_URL = 'https://script.google.com/macros/s/AKfycbz0X-gA6i7Y66zCArwwQ2ciCKOq-V4jLwo3_x7-2ZDdPUV5iWMfaoGJzDslmpEaE1Q8/exec';
 const STORAGE_KEYS = {
   favorites: 'tea_favorites',
@@ -20,6 +20,8 @@ let deferredInstallPrompt = null;
 let favorites = readStoredArray(STORAGE_KEYS.favorites);
 let recentVisits = readStoredArray(STORAGE_KEYS.recentVisits);
 let recentSearches = readStoredArray(STORAGE_KEYS.recentSearches);
+const MERGED_SITE_IDS = { 31: 25 };
+let syncStatus = '최신 목록 확인 중…';
 
 const $ = (id) => document.getElementById(id);
 const els = {
@@ -56,6 +58,8 @@ const els = {
   installBtn: $('installBtn'),
   versionText: $('versionText'),
   updatedText: $('updatedText'),
+  syncStatus: $('syncStatus'),
+  checkUpdateBtn: $('checkUpdateBtn'),
   kakaoGuide: $('kakaoGuide'),
   kakaoGuideMessage: $('kakaoGuideMessage'),
   kakaoAndroidSteps: $('kakaoAndroidSteps'),
@@ -123,7 +127,9 @@ function normalizeSite(site) {
       ? ''
       : cleanNumber(site.fuel),
     note: String(site?.note || '').trim(),
-    warranty: String(site?.warranty || '').trim()
+    warranty: String(site?.warranty || '').trim(),
+    region: String(site?.region || '').trim(),
+    aliases: Number(site?.id) === 25 ? ['군포1', '군포 1'] : []
   };
 }
 
@@ -170,11 +176,18 @@ function siteById(id) {
   return sites.find((site) => Number(site.id) === numericId);
 }
 
-function applySiteData(data) {
+function applySiteData(data, authoritative = false) {
   officialMeta = data.meta || {};
   meta = { ...officialMeta };
   officialSites = Array.isArray(data.sites) ? data.sites.map(normalizeSite) : [];
   sites = officialSites.map((site) => ({ ...site }));
+  if (authoritative) {
+    const ids = new Set(sites.map(site => site.id));
+    const tidy = values => [...new Set(values.map(id => MERGED_SITE_IDS[Number(id)] || Number(id)))].filter(id => ids.has(id));
+    favorites = tidy(favorites);
+    recentVisits = tidy(recentVisits);
+    saveStorage();
+  }
   updateMeta();
   render();
   renderSettingsSiteList();
@@ -207,6 +220,7 @@ async function loadData(options = {}) {
   const skipCache = options.skipCache === true;
   const notifyOnError = options.notifyOnError === true;
   let hasVisibleData = sites.length > 0;
+  setSyncStatus('최신 목록 확인 중…');
   setLoading('불러오는 중...');
 
   if (!skipCache) {
@@ -233,9 +247,11 @@ async function loadData(options = {}) {
 
   try {
     const liveData = await fetchLiveData();
-    applySiteData(liveData);
+    applySiteData(liveData, true);
     saveSiteCache(liveData);
+    setSyncStatus(`최신 목록 확인 완료 · ${new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}`);
   } catch (error) {
+    setSyncStatus(hasVisibleData ? '저장된 목록 표시 중 · 연결 후 새로고침' : '목록 연결 실패 · 다시 시도해 주세요');
     console.warn('Google Sheets 최신 데이터를 불러오지 못했습니다.', error);
     if (!hasVisibleData) {
       els.siteList.innerHTML = '';
@@ -262,6 +278,20 @@ function updateMeta() {
   if (els.updatedText) els.updatedText.textContent = `업데이트 ${meta.updatedAt || '-'}`;
 }
 
+function setSyncStatus(message) {
+  syncStatus = message;
+  if (els.syncStatus) els.syncStatus.textContent = syncStatus;
+}
+
+function buildingAddress(value) {
+  // 층수·동호수·건물명 앞까지 비교하며 도로명 속 숫자는 유지합니다.
+  const text = String(value || '').normalize('NFKC').toLowerCase()
+    .replace(/경기도/g, '경기').replace(/서울특별시/g, '서울')
+    .replace(/(부산|인천|대구|대전|광주|울산)광역시/g, '$1');
+  const match = text.match(/^.*?(?:로|길|동|리)\s*(?:산\s*)?\d+(?:\s*-\s*\d+)?(?=\s|번지|층|$)/);
+  return normalizeSearchText(match ? match[0] : text);
+}
+
 function normalizeSearchText(value) {
   return String(value || '')
     .normalize('NFKC')
@@ -278,6 +308,7 @@ function matchesSiteSearch(site, query) {
     site.address,
     site.note,
     site.region,
+    ...(site.aliases || []),
     site.type === 'coupang' ? '쿠팡' : '일반현장'
   ].join(' '));
   const tokens = rawQuery
@@ -652,7 +683,7 @@ async function saveSiteFromForm(event) {
   const duplicateSites = sites.filter((site) => {
     if (Number(site.id) === idValue) return false;
     const sameName = normalizeSearchText(site.name) === normalizeSearchText(name);
-    const sameAddress = normalizeSearchText(site.address) === normalizeSearchText(address);
+    const sameAddress = buildingAddress(site.address) === buildingAddress(address);
     return sameName || sameAddress;
   });
 
@@ -665,7 +696,7 @@ async function saveSiteFromForm(event) {
       ? `\n외 ${duplicateSites.length - 3}개`
       : '';
     const continueSave = window.confirm(
-      `같은 현장명 또는 주소가 이미 등록되어 있습니다.\n\n${duplicateNames}${moreText}\n\n그래도 저장할까요?`
+      `같은 현장명 또는 같은 건물 주소가 있습니다.\n층이나 업체가 다른 별도 현장이라면 계속 저장할 수 있습니다.\n\n${duplicateNames}${moreText}\n\n그래도 저장할까요?`
     );
     if (!continueSave) {
       toast('중복 가능성이 있어 저장을 취소했습니다.');
@@ -1087,7 +1118,7 @@ function registerServiceWorker() {
 
   window.addEventListener('load', async () => {
     try {
-      const registration = await navigator.serviceWorker.register('./service-worker.js?v=3.6.7', {
+      const registration = await navigator.serviceWorker.register('./service-worker.js?v=3.7.0', {
         scope: './',
         updateViaCache: 'none'
       });
@@ -1101,10 +1132,40 @@ function registerServiceWorker() {
   });
 }
 
+async function checkAppUpdate() {
+  const button = els.checkUpdateBtn;
+  button.disabled = true;
+  button.textContent = '새 버전 확인 중…';
+  try {
+    const response = await fetch(`./index.html?updateCheck=${Date.now()}`, { cache: 'no-store' });
+    if (!response.ok) throw new Error('업데이트 연결 실패');
+    const html = await response.text();
+    const version = html.match(/data-app-version="([^"]+)"/)?.[1];
+    if (!version) throw new Error('버전 확인 실패');
+    if (version === APP_VERSION) {
+      await loadData({ skipCache: true });
+      toast(`${APP_VERSION} 최신 버전입니다.`);
+    } else if (window.confirm(`${version} 업데이트가 있습니다. 새로고침할까요?`)) {
+      if ('serviceWorker' in navigator) {
+        const registration = await navigator.serviceWorker.getRegistration();
+        await registration?.update();
+        registration?.waiting?.postMessage({ type: 'SKIP_WAITING' });
+      }
+      window.location.replace(`./?source=installed-app&update=${encodeURIComponent(version)}&t=${Date.now()}`);
+    }
+  } catch (error) {
+    toast('새 버전을 확인하지 못했습니다. 연결 후 다시 시도해 주세요.');
+  } finally {
+    button.disabled = false;
+    button.textContent = '업데이트 확인';
+  }
+}
+
 function initialize() {
   const storedDarkMode = localStorage.getItem(STORAGE_KEYS.darkMode) === '1';
   applyDarkMode(storedDarkMode);
   initEvents();
+  els.checkUpdateBtn?.addEventListener('click', checkAppUpdate);
   registerServiceWorker();
   updateInstallButton();
   if (isKakaoInAppBrowser()) showKakaoGuide();

@@ -1,11 +1,12 @@
-const CACHE_NAME = 'total-eng-address-v3-6-7';
+const CACHE_NAME = 'total-eng-address-v3-7-0';
 const APP_SHELL = [
   './',
   './index.html',
-  './style.css?v=3.6.7',
-  './manifest.json?v=3.6.7',
+  './style.css?v=3.7.0',
+  './manifest.json?v=3.7.0',
   './robots.txt',
-  './js/app.js?v=3.6.7',
+  './js/app.js?v=3.7.0',
+  './js/contacts.js?v=3.7.0',
   './data/sites.json',
   './img/logo.png',
   './img/favicon-32.png',
@@ -80,6 +81,7 @@ self.addEventListener('fetch', (event) => {
 
   const updateSensitiveFile = url.pathname.endsWith('/data/sites.json')
     || url.pathname.endsWith('/js/app.js')
+    || url.pathname.endsWith('/js/contacts.js')
     || url.pathname.endsWith('/style.css')
     || url.pathname.endsWith('/manifest.json')
     || url.pathname.endsWith('/service-worker.js');
