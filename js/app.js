@@ -1,6 +1,6 @@
 'use strict';
 
-const APP_VERSION = 'V3.8.1';
+const APP_VERSION = 'V3.8.2';
 const DEPARTMENT_PREVIEW = new URLSearchParams(window.location.search).get('preview') === 'departments';
 const API_URL = 'https://script.google.com/macros/s/AKfycbwm6dZlQHZjZznU9D9dqm35xuCZjR3755HZIESeKXWJmb79dr497cYP0gLEQZvwcLXS/exec';
 const STORAGE_KEYS = {
@@ -41,8 +41,6 @@ const els = {
   closeSettingsBtn: $('closeSettingsBtn'),
   darkModeToggle: $('darkModeToggle'),
   addSiteBtn: $('addSiteBtn'),
-  settingsSiteSearch: $('settingsSiteSearch'),
-  settingsSiteList: $('settingsSiteList'),
   siteEditorModal: $('siteEditorModal'),
   closeSiteEditorBtn: $('closeSiteEditorBtn'),
   siteEditorForm: $('siteEditorForm'),
@@ -191,7 +189,6 @@ function applySiteData(data, authoritative = false) {
   }
   updateMeta();
   render();
-  renderSettingsSiteList();
 }
 
 function hideSplashQuickly() {
@@ -427,7 +424,7 @@ function openDetail(id) {
   const isCoupang = site.type === 'coupang';
 
   els.detailContent.innerHTML = `<span class="type-badge ${isCoupang ? 'coupang' : ''}">${isCoupang ? '📦 쿠팡' : '🏗️ 일반현장'}</span>
-    <div class="detail-title">${escapeHtml(site.name)}</div>
+    <div class="detail-title-row"><div class="detail-title">${escapeHtml(site.name)}</div><button class="detail-edit-button" type="button" data-action="edit-site" data-id="${numericId}" aria-label="${escapeHtml(site.name)} 현장 수정">수정</button></div>
     <div class="detail-address">📍 ${escapeHtml(site.address)}</div>
     ${hasTravelInfo(site) ? `<div class="info-grid">
       <div class="info-box"><span>거리</span><strong>${distanceText(site)}</strong></div>
@@ -575,6 +572,12 @@ function handleAction(event) {
   const action = actionTarget.dataset.action;
   const id = actionTarget.dataset.id;
 
+  if (action === 'edit-site') {
+    event.stopPropagation();
+    openSiteEditor(Number(id));
+    return;
+  }
+
   if (action === 'toggle-favorite') {
     event.stopPropagation();
     toggleFavorite(id);
@@ -608,9 +611,7 @@ function openSettings() {
   if (els.darkModeToggle) {
     els.darkModeToggle.checked = document.body.classList.contains('dark');
   }
-  if (els.settingsSiteSearch) els.settingsSiteSearch.value = '';
-  renderSettingsSiteList();
-  window.setTimeout(() => els.addSiteBtn?.focus(), 40);
+  window.setTimeout(() => els.closeSettingsBtn?.focus(), 40);
 }
 
 function closeSettings() {
@@ -620,29 +621,11 @@ function closeSettings() {
   document.body.classList.remove('settings-open');
 }
 
-function renderSettingsSiteList() {
-  if (!els.settingsSiteList) return;
-  const keyword = String(els.settingsSiteSearch?.value || '').trim();
-  const filtered = sites.filter((site) => matchesSiteSearch(site, keyword));
-
-  if (!filtered.length) {
-    els.settingsSiteList.innerHTML = '<div class="settings-empty">해당 현장을 찾을 수 없습니다.</div>';
-    return;
-  }
-
-  els.settingsSiteList.innerHTML = filtered.map((site) => `
-    <div class="settings-site-item">
-      <button class="settings-site-edit" type="button" data-edit-site-id="${Number(site.id)}">
-        <span class="settings-site-type">${site.type === 'coupang' ? '쿠팡' : '일반'}</span>
-        <strong>${escapeHtml(site.name)}</strong>
-        <small>${escapeHtml(site.address)}</small>
-      </button>
-    </div>`).join('');
-}
-
 function openSiteEditor(id = null) {
   if (!els.siteEditorModal || !els.siteEditorForm) return;
   const site = id === null ? null : siteById(id);
+  if (id !== null && !site) { toast('현장 정보를 찾지 못했습니다. 목록을 새로고침해 주세요.'); return; }
+  closeDetail();
 
   els.siteEditorForm.reset();
   els.siteIdInput.value = site ? String(site.id) : '';
@@ -739,10 +722,8 @@ async function saveSiteFromForm(event) {
     }
     saveSiteCache({ meta, sites });
     render();
-    renderSettingsSiteList();
     closeSiteEditor(true);
     await loadData({ skipCache: true });
-    renderSettingsSiteList();
     toast(idValue ? '현장 정보가 모든 직원에게 수정되었습니다.' : '새 현장이 모든 직원에게 등록되었습니다.');
   } catch (error) {
     console.error(error);
@@ -805,7 +786,6 @@ async function deleteCurrentSite() {
     saveStorage();
     saveSiteCache({ meta, sites });
     render();
-    renderSettingsSiteList();
     closeSiteEditor(true);
     await loadData({ skipCache: true });
     toast('현장이 삭제됐고 직전 목록은 자동백업에 보관됐습니다.');
@@ -1068,12 +1048,6 @@ function initEvents() {
   });
   els.darkModeToggle?.addEventListener('change', () => applyDarkMode(els.darkModeToggle.checked));
   els.addSiteBtn?.addEventListener('click', () => openSiteEditor());
-  els.settingsSiteSearch?.addEventListener('input', renderSettingsSiteList);
-  els.settingsSiteList?.addEventListener('click', (event) => {
-    const button = event.target.closest('[data-edit-site-id]');
-    if (!button) return;
-    openSiteEditor(Number(button.dataset.editSiteId));
-  });
   els.closeSiteEditorBtn?.addEventListener('click', () => closeSiteEditor());
   els.siteEditorModal?.addEventListener('click', (event) => {
     if (event.target === els.siteEditorModal) closeSiteEditor();
@@ -1121,7 +1095,7 @@ function registerServiceWorker() {
 
   window.addEventListener('load', async () => {
     try {
-      const registration = await navigator.serviceWorker.register('./service-worker.js?v=3.8.1', {
+      const registration = await navigator.serviceWorker.register('./service-worker.js?v=3.8.2', {
         scope: './',
         updateViaCache: 'none'
       });

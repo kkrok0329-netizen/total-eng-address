@@ -13,13 +13,13 @@
 
   <title>TOTAL ENG 업무수첩</title>
 
-  <link rel="manifest" href="./manifest.json?v=3.8.1" />
+  <link rel="manifest" href="./manifest.json?v=3.8.2" />
   <link rel="stylesheet" href="./style.css?v=3.8.0-brand1" />
-  <link rel="stylesheet" href="./ui-refresh.css?v=3.8.1" />
+  <link rel="stylesheet" href="./ui-refresh.css?v=3.8.2" />
   <link rel="icon" type="image/png" sizes="32x32" href="./img/app-icon-v380-32.png" />
   <link rel="apple-touch-icon" sizes="180x180" href="./img/app-icon-v380-180.png" />
 </head>
-<body data-app-version="V3.8.1">
+<body data-app-version="V3.8.2">
   <div id="kakaoGuide" class="kakao-guide" hidden aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="kakaoGuideTitle">
     <div class="kakao-guide-card">
       <img class="kakao-guide-logo" src="./img/logo.png" alt="TOTAL ENG" />
@@ -227,6 +227,7 @@
     <section class="summary-row">
       <span id="headerCount" class="site-total-pill" aria-live="polite">불러오는 중...</span>
       <span id="countText">전체 0개</span>
+      <button id="addSiteBtn" class="site-add-button" type="button">+ 현장 추가</button>
       <button id="refreshBtn" type="button">새로고침</button>
     </section>
 
@@ -250,7 +251,7 @@
     </section>
 
     <footer class="app-footer">
-      <span id="versionText">V3.8.1</span>
+      <span id="versionText">V3.8.2</span>
       <span id="updatedText">업데이트 확인 중</span>
     </footer>
   </div>
@@ -289,26 +290,6 @@
         </div>
       </section>
 
-      <section class="settings-section">
-        <div class="settings-section-title">
-          <div>
-            <strong>현장주소 관리</strong>
-            <p>현장을 추가하거나 기존 정보를 수정할 수 있습니다.</p>
-          </div>
-          <button id="addSiteBtn" class="settings-primary-small" type="button">+ 주소 추가</button>
-        </div>
-
-        <div class="settings-warning settings-sync-notice">
-          추가하거나 수정한 현장은 <strong>Google Sheets에 즉시 저장</strong>되어 모든 직원에게 표시됩니다.
-        </div>
-
-        <div class="settings-search">
-          <span aria-hidden="true">🔍</span>
-          <input id="settingsSiteSearch" type="search" placeholder="현장명 또는 주소 검색" autocomplete="off" />
-        </div>
-        <div id="settingsSiteList" class="settings-site-list" aria-live="polite"></div>
-      </section>
-
     </div>
   </div>
 
@@ -324,6 +305,7 @@
 
       <form id="siteEditorForm" class="site-editor-form">
         <input id="siteIdInput" type="hidden" />
+        <p class="site-editor-share-notice">저장한 내용은 모든 직원에게 공유됩니다. 삭제 전 정보는 백업됩니다.</p>
 
         <label>
           <span>구분</span>
@@ -359,7 +341,7 @@
   <div id="updateNoticeModal" class="update-notice-modal" hidden aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="updateNoticeTitle">
     <div class="update-notice-card">
       <span class="update-notice-label">NEW UPDATE</span>
-      <div class="update-notice-version">V3.8.1</div>
+      <div class="update-notice-version">V3.8.2</div>
       <h2 id="updateNoticeTitle">앱이 새로워졌어요</h2>
       <p class="update-notice-intro">이번 업데이트에서 달라진 내용을 확인해 주세요.</p>
       <ul class="update-notice-list">
@@ -367,6 +349,7 @@
         <li><strong>우리회사 부서 필터</strong><span>경영지원·전장사업부·기계사업부·프로그램사업부·연구소로 구분합니다.</span></li>
         <li><strong>연락처 공유·저장</strong><span>연락처를 공유하거나 휴대폰으로 가져올 수 있는 파일로 저장합니다. 내부 메모는 제외됩니다.</span></li>
         <li><strong>화면 디자인 정돈</strong><span>현장 카드·공용 주소록·검색·설정 화면을 통일된 디자인으로 개선했습니다.</span></li>
+        <li><strong>현장 추가·수정 위치 변경</strong><span>현장주소 탭에서 추가하고, 현장을 누른 상세 화면의 수정 버튼에서 편집합니다.</span></li>
       </ul>
       <button id="closeUpdateNoticeBtn" class="update-notice-confirm" type="button">확인하고 시작하기</button>
       <p class="update-notice-once">이 안내는 이번 버전에서 한 번만 표시됩니다.</p>
@@ -381,9 +364,9 @@
     <form method="dialog"><button class="settings-primary-small">확인</button></form>
   </dialog>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
-  <script src="./js/app.js?v=3.8.1" defer></script>
+  <script src="./js/app.js?v=3.8.2" defer></script>
   <script src="./js/departments.js?v=3.8.0" defer></script>
-  <script src="./js/contact-transfer.js?v=3.8.1" defer></script>
-  <script src="./js/contacts.js?v=3.8.1" defer></script>
+  <script src="./js/contact-transfer.js?v=3.8.2" defer></script>
+  <script src="./js/contacts.js?v=3.8.2" defer></script>
 </body>
 </html>
