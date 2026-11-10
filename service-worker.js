@@ -1,13 +1,14 @@
 const CACHE_PREFIX = `total-eng-address-${encodeURIComponent(self.registration.scope)}-`;
-const CACHE_NAME = `${CACHE_PREFIX}v3-7-4`;
+const CACHE_NAME = `${CACHE_PREFIX}v3-8-0`;
 const APP_SHELL = [
   './',
   './index.html',
-  './style.css?v=3.7.4',
-  './manifest.json?v=3.7.4',
+  './style.css?v=3.8.0',
+  './manifest.json?v=3.8.0',
   './robots.txt',
-  './js/app.js?v=3.7.4',
-  './js/contacts.js?v=3.7.4',
+  './js/app.js?v=3.8.0',
+  './js/contacts.js?v=3.8.0',
+  './js/departments.js?v=3.8.0',
   './data/sites.json',
   './img/logo.png',
   './img/favicon-32.png',
@@ -89,6 +90,7 @@ self.addEventListener('fetch', (event) => {
     || url.pathname.endsWith('/data/sites.json')
     || url.pathname.endsWith('/js/app.js')
     || url.pathname.endsWith('/js/contacts.js')
+    || url.pathname.endsWith('/js/departments.js')
     || url.pathname.endsWith('/style.css')
     || url.pathname.endsWith('/manifest.json')
     || url.pathname.endsWith('/service-worker.js');

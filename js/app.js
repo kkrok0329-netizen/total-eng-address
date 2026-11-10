@@ -1,6 +1,7 @@
 'use strict';
 
-const APP_VERSION = 'V3.7.4';
+const APP_VERSION = 'V3.8.0';
+const DEPARTMENT_PREVIEW = new URLSearchParams(window.location.search).get('preview') === 'departments';
 const API_URL = 'https://script.google.com/macros/s/AKfycbwm6dZlQHZjZznU9D9dqm35xuCZjR3755HZIESeKXWJmb79dr497cYP0gLEQZvwcLXS/exec';
 const STORAGE_KEYS = {
   favorites: 'tea_favorites',
@@ -343,7 +344,7 @@ function render() {
   const data = filteredSites();
   updateMeta();
 
-  if (els.countText) els.countText.textContent = `전체 ${data.length}개`;
+  if (els.countText) els.countText.textContent = `표시 ${data.length}개`;
   renderFavoriteTop();
   els.siteList.innerHTML = '';
 
@@ -670,6 +671,7 @@ function closeSiteEditor(force = false) {
 
 async function saveSiteFromForm(event) {
   event.preventDefault();
+  if (DEPARTMENT_PREVIEW) { toast('미리보기에서는 현장정보를 변경하지 않습니다.'); return; }
 
   const idValue = Number(els.siteIdInput.value || 0);
   const name = String(els.siteNameInput.value || '').trim();
@@ -753,6 +755,7 @@ async function saveSiteFromForm(event) {
 }
 
 async function deleteCurrentSite() {
+  if (DEPARTMENT_PREVIEW) { toast('미리보기에서는 현장정보를 변경하지 않습니다.'); return; }
   const id = Number(els.siteIdInput.value || 0);
   const site = siteById(id);
   if (!site) {
@@ -1118,7 +1121,7 @@ function registerServiceWorker() {
 
   window.addEventListener('load', async () => {
     try {
-      const registration = await navigator.serviceWorker.register('./service-worker.js?v=3.7.4', {
+      const registration = await navigator.serviceWorker.register('./service-worker.js?v=3.8.0', {
         scope: './',
         updateViaCache: 'none'
       });
@@ -1168,11 +1171,11 @@ function initialize() {
   const locationText = document.getElementById('appLocation');
   if (locationText) locationText.textContent = window.location.origin + window.location.pathname;
   els.checkUpdateBtn?.addEventListener('click', checkAppUpdate);
-  registerServiceWorker();
+  if (!DEPARTMENT_PREVIEW) registerServiceWorker();
   updateInstallButton();
   if (isKakaoInAppBrowser()) showKakaoGuide();
   loadData();
-  window.setTimeout(showUpdateNoticeOnce, 650);
+  if (!DEPARTMENT_PREVIEW) window.setTimeout(showUpdateNoticeOnce, 650);
 }
 
 initialize();

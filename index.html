@@ -3,22 +3,22 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="description" content="TOTAL ENG AS 및 공사 현장 주소 검색 앱" />
+  <meta name="description" content="TOTAL ENG 현장 정보와 업무 연락처를 한곳에" />
   <meta name="robots" content="noindex, nofollow, noarchive" />
   <meta name="theme-color" content="#003D8E" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-  <meta name="apple-mobile-web-app-title" content="현장주소" />
+  <meta name="apple-mobile-web-app-title" content="업무수첩" />
 
-  <title>TOTAL ENG 현장주소</title>
+  <title>TOTAL ENG 업무수첩</title>
 
-  <link rel="manifest" href="./manifest.json?v=3.7.4" />
-  <link rel="stylesheet" href="./style.css?v=3.7.4" />
+  <link rel="manifest" href="./manifest.json?v=3.8.0" />
+  <link rel="stylesheet" href="./style.css?v=3.8.0" />
   <link rel="icon" type="image/png" sizes="32x32" href="./img/favicon-32.png" />
   <link rel="apple-touch-icon" sizes="180x180" href="./img/icon-180.png" />
 </head>
-<body data-app-version="V3.7.4">
+<body data-app-version="V3.8.0">
   <div id="kakaoGuide" class="kakao-guide" hidden aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="kakaoGuideTitle">
     <div class="kakao-guide-card">
       <img class="kakao-guide-logo" src="./img/logo.png" alt="TOTAL ENG" />
@@ -29,7 +29,7 @@
       <ol id="kakaoAndroidSteps" class="kakao-guide-steps">
         <li><strong>Chrome으로 열기</strong> 버튼을 누르세요.</li>
         <li>Chrome 화면에서 <strong>설치</strong>를 누르세요.</li>
-        <li>휴대폰 바탕화면의 <strong>현장주소</strong>를 누르면 됩니다.</li>
+        <li>휴대폰 바탕화면의 <strong>업무수첩</strong>을 누르면 됩니다.</li>
       </ol>
 
       <ol id="kakaoIosSteps" class="kakao-guide-steps" hidden>
@@ -176,7 +176,7 @@
 
   <div id="splash" class="splash" aria-live="polite">
     <img src="./img/logo.png" alt="TOTAL ENG" />
-    <strong>현장주소</strong>
+    <strong>업무수첩</strong>
     <span>Loading...</span>
   </div>
 
@@ -189,9 +189,8 @@
           <button id="settingsBtn" class="icon-btn settings-btn" type="button" aria-label="설정 열기">⚙️</button>
         </div>
       </div>
-      <h1>현장주소</h1>
-      <p>AS · 공사 현장 검색 / 주소복사 / 길찾기</p>
-      <div id="headerCount" class="header-count" aria-live="polite">불러오는 중...</div>
+      <h1>업무수첩</h1>
+      <p>현장 정보와 업무 연락처를 한곳에</p>
     </header>
 
     <nav class="app-sections" aria-label="앱 메뉴">
@@ -218,6 +217,7 @@
     </nav>
 
     <section class="summary-row">
+      <span id="headerCount" class="site-total-pill" aria-live="polite">불러오는 중...</span>
       <span id="countText">전체 0개</span>
       <button id="refreshBtn" type="button">새로고침</button>
     </section>
@@ -231,13 +231,18 @@
         <button type="button" data-category="우리회사" aria-pressed="false">우리회사</button>
         <button type="button" data-category="현장" aria-pressed="false">현장</button>
       </nav>
+      <section id="departmentPanel" class="department-panel" hidden aria-labelledby="departmentTitle">
+        <div class="department-heading"><strong id="departmentTitle">우리회사 부서</strong><span>부서별 연락처</span></div>
+        <nav id="departmentFilters" class="department-filters" aria-label="우리회사 부서"></nav>
+        <p id="departmentHint" class="department-hint" aria-live="polite"></p>
+      </section>
       <div class="contacts-toolbar"><span id="contactCount">전체 0명</span><button id="addContactBtn" type="button">+ 연락처 추가</button></div>
       <div class="contacts-toolbar"><p id="contactStatus" role="status" aria-live="polite">주소록 연결 대기</p><button id="refreshContactsBtn" type="button">새로고침</button></div>
       <div id="contactList"></div>
     </section>
 
     <footer class="app-footer">
-      <span id="versionText">V3.7.4</span>
+      <span id="versionText">V3.8.0</span>
       <span id="updatedText">업데이트 확인 중</span>
     </footer>
   </div>
@@ -346,13 +351,13 @@
   <div id="updateNoticeModal" class="update-notice-modal" hidden aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="updateNoticeTitle">
     <div class="update-notice-card">
       <span class="update-notice-label">NEW UPDATE</span>
-      <div class="update-notice-version">V3.7.4</div>
+      <div class="update-notice-version">V3.8.0</div>
       <h2 id="updateNoticeTitle">앱이 새로워졌어요</h2>
       <p class="update-notice-intro">이번 업데이트에서 달라진 내용을 확인해 주세요.</p>
       <ul class="update-notice-list">
-        <li><strong>업체명 자유 입력</strong><span>새 업체명을 직접 등록하면 필터가 자동 생성됩니다. 띄어쓰기·영문 대소문자만 다른 업체명은 하나로 묶습니다.</span></li>
-        <li><strong>다양한 연락처 검색</strong><span>이름·직책·현장명·업체·전화번호·메모로 검색할 수 있습니다.</span></li>
-        <li><strong>전화·문자 바로가기</strong><span>전화 또는 문자 앱으로 바로 연결됩니다. 연락처 수정·삭제 전 정보는 이력에 보관합니다.</span></li>
+        <li><strong>TOTAL ENG 업무수첩</strong><span>현장주소와 공용 주소록을 담는 앱 이름으로 바꿨습니다.</span></li>
+        <li><strong>우리회사 부서 필터</strong><span>경영지원·전장사업부·기계사업부·프로그램사업부·연구소로 구분합니다.</span></li>
+        <li><strong>직원 명단 갱신</strong><span>부서·직책을 반영하고 김경록 주임님을 추가했습니다.</span></li>
       </ul>
       <button id="closeUpdateNoticeBtn" class="update-notice-confirm" type="button">확인하고 시작하기</button>
       <p class="update-notice-once">이 안내는 이번 버전에서 한 번만 표시됩니다.</p>
@@ -362,12 +367,13 @@
   <dialog id="iosInstallGuide" class="contact-editor" aria-labelledby="iosInstallTitle">
     <h2 id="iosInstallTitle">아이폰 홈 화면에 추가</h2>
     <p>카카오톡·네이버 앱 안에서 열었다면 먼저 링크를 복사하고 Safari에서 열어 주세요.</p>
-    <ol><li>Safari에서 이 앱 주소를 엽니다.</li><li>공유 버튼(네모 위로 화살표)을 누릅니다. 보이지 않으면 페이지 메뉴를 펼쳐 공유를 찾으세요.</li><li>공유 메뉴를 아래로 내려 <strong>홈 화면에 추가</strong>를 선택합니다. 없으면 <strong>동작 편집</strong>에서 추가하세요.</li><li><strong>웹 앱으로 열기</strong> 항목이 있으면 켜고 <strong>추가</strong>를 누릅니다.</li><li>홈 화면의 현장주소 아이콘으로 실행합니다.</li></ol>
+    <ol><li>Safari에서 이 앱 주소를 엽니다.</li><li>공유 버튼(네모 위로 화살표)을 누릅니다. 보이지 않으면 페이지 메뉴를 펼쳐 공유를 찾으세요.</li><li>공유 메뉴를 아래로 내려 <strong>홈 화면에 추가</strong>를 선택합니다. 없으면 <strong>동작 편집</strong>에서 추가하세요.</li><li><strong>웹 앱으로 열기</strong> 항목이 있으면 켜고 <strong>추가</strong>를 누릅니다.</li><li>홈 화면의 업무수첩 아이콘으로 실행합니다.</li></ol>
     <p>회사에서 관리하는 기기는 홈 화면 추가가 제한될 수 있습니다.</p>
     <form method="dialog"><button class="settings-primary-small">확인</button></form>
   </dialog>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
-  <script src="./js/app.js?v=3.7.4" defer></script>
-  <script src="./js/contacts.js?v=3.7.4" defer></script>
+  <script src="./js/app.js?v=3.8.0" defer></script>
+  <script src="./js/departments.js?v=3.8.0" defer></script>
+  <script src="./js/contacts.js?v=3.8.0" defer></script>
 </body>
 </html>
