@@ -64,12 +64,13 @@
     q('contactCount').textContent = `${category}${companySelected && selectedDepartment !== '전체' ? ' · ' + selectedDepartment : ''} ${filtered.length}명`;
     q('contactList').innerHTML = filtered.map(c => {
       const digits = (String(c.phone || '').trim().startsWith('+') ? '+' : '') + phoneDigits(c.phone);
-      return `<article class="contact-card"><div class="contacts-toolbar"><span class="contact-badge">${escapeHtml(contactCategory(c))}</span><button type="button" data-edit="${escapeHtml(c.id)}" aria-label="${escapeHtml(c.name)} 수정">✎ 수정</button></div>
-        <h3>${escapeHtml(c.name)} <small>${escapeHtml(c.position)}</small></h3>
+      return `<article class="contact-card"><div class="contacts-toolbar"><span class="contact-badge">${escapeHtml(contactCategory(c))}</span><button type="button" class="contact-edit-btn" data-edit="${escapeHtml(c.id)}" aria-label="${escapeHtml(c.name)} 수정">수정</button></div>
+        <div class="contact-identity"><span class="contact-avatar" aria-hidden="true">${escapeHtml(String(c.name || '?').slice(0, 1))}</span><h3>${escapeHtml(c.name)} <small>${escapeHtml(c.position)}</small></h3></div>
         ${departments.isCompany(c) ? `<p class="contact-department">부서 · ${escapeHtml(departments.get(c) || '부서 미지정')}</p>` : ''}
         ${c.company ? `<p>업체 · ${escapeHtml(c.company)}</p>` : ''}${c.siteName ? `<p>현장 · ${escapeHtml(c.siteName)}</p>` : ''}
-        <p>${escapeHtml(c.phone)}</p>${c.note ? `<p class="contact-note">${escapeHtml(c.note)}</p>` : ''}
-        <div class="contact-actions">${digits ? `<a href="tel:${digits}" aria-label="${escapeHtml(c.name)}에게 전화">📞 전화</a><a href="sms:${digits}" aria-label="${escapeHtml(c.name)}에게 문자">💬 문자</a>` : '<span>전화번호를 확인해 주세요.</span>'}</div></article>`;
+        <p class="contact-phone">${escapeHtml(c.phone)}</p>${c.note ? `<p class="contact-note">${escapeHtml(c.note)}</p>` : ''}
+        <div class="contact-actions">${digits ? `<a href="tel:${digits}" aria-label="${escapeHtml(c.name)}에게 전화">전화</a><a href="sms:${digits}" aria-label="${escapeHtml(c.name)}에게 문자">문자</a>` : '<span>전화번호를 확인해 주세요.</span>'}</div>
+        <div class="contact-transfer-actions"><button type="button" data-share="${escapeHtml(c.id)}" aria-label="${escapeHtml(c.name)} 연락처 공유">공유</button><button type="button" data-save="${escapeHtml(c.id)}" aria-label="${escapeHtml(c.name)} 연락처 저장">연락처 저장</button></div></article>`;
     }).join('') || (companySelected && selectedDepartment !== '전체' ? `<p class="empty">${escapeHtml(selectedDepartment)}에 배정된 연락처가 없습니다.<br>소속 명단을 받으면 여기에 표시됩니다.</p>` : '<p class="empty">연락처가 없습니다.<br>검색어나 분류를 바꾸거나 연락처를 추가해 주세요.</p>');
   }
   async function request(action, body) {
@@ -151,7 +152,40 @@
     field('department').disabled = !visible;
   }
   field('category').addEventListener('input', updateDepartmentField);
-  q('contactList').onclick = event => { const button = event.target.closest('[data-edit]'); if (button) openEditor(contacts.find(c => String(c.id) === button.dataset.edit)); };
+  const transferHelp = document.createElement('dialog');
+  transferHelp.className = 'contact-editor transfer-help';
+  transferHelp.setAttribute('aria-labelledby', 'transferHelpTitle');
+  transferHelp.innerHTML = `<h2 id="transferHelpTitle">연락처 전달</h2><p id="transferHelpMessage"></p><textarea id="transferHelpText" readonly aria-label="공유할 연락처" rows="5" hidden></textarea><form method="dialog"><button class="settings-primary-small">확인</button></form>`;
+  document.body.appendChild(transferHelp);
+  function showTransferHelp(message, value) {
+    q('transferHelpMessage').textContent = message;
+    q('transferHelpText').hidden = !value;
+    q('transferHelpText').value = value || '';
+    transferHelp.showModal();
+  }
+  let sharing = false;
+  q('contactList').onclick = async event => {
+    const button = event.target.closest('[data-edit],[data-share],[data-save]');
+    if (!button) return;
+    const id = button.dataset.edit || button.dataset.share || button.dataset.save;
+    const contact = contacts.find(c => String(c.id) === id);
+    if (!contact) return;
+    if (button.hasAttribute('data-edit')) { openEditor(contact); return; }
+    if (button.hasAttribute('data-save')) {
+      try {
+        ContactTransfer.save(contact);
+        showTransferHelp('연락처 파일(.vcf)을 열어 ‘새 연락처 추가’ 또는 ‘가져오기’를 선택해 주세요. 파일만 내려받은 상태라면 다운로드 목록이나 파일 앱에서 열면 됩니다. 휴대폰 주소록에 자동 저장되는 것은 아닙니다.');
+      } catch (_) { toast('연락처 파일을 만들지 못했습니다. 공유 버튼을 이용해 주세요.'); }
+      return;
+    }
+    if (sharing) return;
+    sharing = true; button.disabled = true;
+    try {
+      const result = await ContactTransfer.share(contact);
+      if (result === 'copied') toast('연락처를 복사했습니다. 원하는 대화창에 붙여넣어 주세요.');
+      else if (result?.manual) showTransferHelp('공유 기능을 사용할 수 없어 연락처를 표시합니다. 아래 내용을 길게 눌러 복사해 주세요.', result.manual);
+    } finally { sharing = false; button.disabled = false; }
+  };
   q('contactFilters').onclick = event => {
     const button = event.target.closest('[data-category]'); if (!button) return;
     category = button.dataset.category;

@@ -1,0 +1,63 @@
+/* V3.8.1 — common visual language, no external fonts or UI dependencies. */
+:root{--bg:#f2f5f9;--line:#e2e8f0;--text:#172b45;--muted:#6c7c90;--card:#fff;--soft:#f4f7fb;--shadow:0 5px 18px #17395d08}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Malgun Gothic",sans-serif;-webkit-font-smoothing:antialiased}
+button,a,input,select,textarea{-webkit-tap-highlight-color:transparent}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #ec9c30;outline-offset:3px}
+.app-sections{gap:5px;margin:16px 18px 32px;padding:5px;border:1px solid var(--line);background:#e7edf5;border-radius:17px}
+.app-sections button{border:0;background:transparent;color:#52657d;border-radius:12px;min-height:44px;padding:11px 8px;font-size:14px;box-shadow:none}
+.app-sections button.selected{background:#fff;color:#073e80;border:0;box-shadow:0 2px 8px #15335412}
+.search-box,.contacts-view .search-box{height:54px;border-radius:16px;border:1px solid var(--line);box-shadow:var(--shadow);gap:9px;padding:0 14px}
+.search-box input{font-size:14px;min-width:0;color:var(--text)}
+.search-box input::placeholder{color:#8290a2}
+.tabs{gap:7px;padding-top:16px}.tab{padding:10px 13px;font-size:12px;background:transparent;box-shadow:none;border:1px solid #dbe3ed;color:#59708e}
+.tab.active{background:#0b448a;border-color:#0b448a;color:#fff}
+.summary-row{font-size:12px;padding-bottom:12px}.site-total-pill{background:transparent;padding:0;font-size:12px;color:#344e70}
+#refreshBtn,.contacts-toolbar button{background:transparent;border:1px solid var(--line);border-radius:10px;color:#536d8d;font-size:12px;padding:8px 10px;min-height:36px}
+.site-card{border-radius:19px;padding:15px;margin-bottom:12px;box-shadow:var(--shadow);border:1px solid var(--line)}
+.type-badge{background:#eef4fc;color:#3f618a;border-radius:7px;font-weight:700}.type-badge.coupang{background:#fff5e8;color:#956019}
+.favorite-btn{background:transparent;color:#d79a3b;width:36px;height:36px}
+.site-title{font-size:20px;font-weight:800;letter-spacing:-.6px;margin-top:8px;color:#193c68}
+.site-card .address{font-size:13px;line-height:1.6;color:#65768b;margin-top:7px}
+.site-card .info-grid{gap:0;background:var(--soft);border-radius:12px;padding:10px 0;margin-top:12px}
+.site-card .info-box{padding:0 5px;border-radius:0;background:transparent}.site-card .info-box+.info-box{border-left:1px solid var(--line)}
+.site-card .info-box span{font-size:10px;color:#7b8899}.site-card .info-box strong{font-size:11px;font-weight:700;color:#334f73;margin-top:5px}
+.site-card .meta-row{margin-top:9px}.site-card .meta-chip{background:var(--soft);color:#61758e;font-weight:600;border-radius:6px;padding:5px 7px}
+.card-buttons{gap:6px;margin-top:13px}.card-buttons button{min-height:40px;border-radius:10px;font-size:11px;font-weight:700}
+.card-buttons button:nth-child(1){background:#edf3fb;color:#315780}
+.card-buttons button:nth-child(2){background:#164c8b;color:#fff}
+.card-buttons button:nth-child(3){background:#fff4c2;color:#6c5811!important}
+.card-buttons button:nth-child(4){background:#e6f6ec;color:#247446}
+.favorite-chip{background:#fff8ea;border:1px solid #eee0c8;border-radius:13px;box-shadow:none}
+.contact-filters{gap:7px;padding:0 0 4px;margin:16px 0}.contact-filters button{border:1px solid var(--line);background:transparent;color:#5b708b;border-radius:999px;padding:9px 13px;min-height:38px;font-size:12px;white-space:nowrap}
+.contact-filters button.selected{background:#0b448a;border-color:#0b448a;color:#fff}
+.contact-filters{scrollbar-width:none}.contact-filters::-webkit-scrollbar{display:none}
+.department-panel{background:#eaf0f8;border:1px solid #dce5f0;padding:14px;border-radius:16px}.department-heading{font-size:13px;color:#39577c}.department-heading>span{font-size:10px}
+.department-filters{gap:7px;margin:12px 0}.department-filters button{min-height:42px;border-radius:10px;font-size:12px;border-color:#dbe4f0;padding:9px 10px}.department-filters button.selected{background:#174c88;border-color:#174c88}.department-hint{font-size:11px;line-height:1.6}
+.contacts-toolbar{margin:10px 0;gap:8px}#contactCount{font-size:13px;font-weight:700;color:#344e70}#addContactBtn{background:#164c8b;color:#fff;border-color:#164c8b;font-size:12px;min-height:38px}#contactStatus{font-size:11px;margin:0}
+.contact-card{position:relative;border-radius:19px;border:1px solid var(--line);box-shadow:var(--shadow);padding:17px;margin:12px 0}
+.contact-card>.contacts-toolbar{margin:0 0 13px}.contact-badge{font-size:10px;letter-spacing:.2px;padding:5px 8px;border-radius:6px;background:#edf3fb;color:#4b6689}
+.contact-card .contact-edit-btn{min-height:32px;padding:5px 9px;border:0;font-size:11px;color:#6f8096;background:transparent}
+.contact-identity{display:flex;align-items:center;gap:11px;margin-bottom:13px}.contact-avatar{display:grid;place-items:center;flex:0 0 42px;width:42px;height:42px;border-radius:14px;background:#eaf0f8;color:#2e5687;font-size:18px;font-weight:800}
+.contact-card h3{margin:0;font-size:21px;line-height:1.4;letter-spacing:-.5px;color:#1e3a60}.contact-card small{font-size:13px;font-weight:500;color:#758397;display:inline-block;margin-left:3px}
+.contact-card p{font-size:12px;color:#697a90;line-height:1.6;margin:5px 0;overflow-wrap:anywhere}.contact-card .contact-department{font-size:12px;color:#45658f;font-weight:600}.contact-card .contact-phone{font-variant-numeric:tabular-nums;font-size:16px;letter-spacing:.3px;color:#253f61;font-weight:600;margin:10px 0}
+.contact-card .contact-note{background:var(--soft);padding:9px 11px;border-radius:9px;font-size:12px;margin-top:10px}
+.contact-card .contact-actions{gap:8px;margin-top:14px}.contact-card .contact-actions a{min-height:44px;border-radius:11px;font-size:13px;font-weight:700;background:#174c88;color:#fff}.contact-card .contact-actions a:nth-child(2){background:#eaf1fa;color:#365e90}
+.contact-transfer-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}.contact-transfer-actions button{min-height:40px;border:1px solid var(--line);border-radius:11px;background:transparent;color:#5e738d;font-size:12px;font-weight:600}.contact-transfer-actions button:disabled{opacity:.5}
+.settings-sheet,.site-editor-sheet{background:var(--bg);border-radius:25px 25px 0 0;padding-top:24px}.settings-head h2{font-size:27px;color:#1e3d66}.settings-label{background:transparent;padding:0;color:#6f839e;font-size:11px}.settings-section{border-radius:17px;box-shadow:none;border-color:var(--line)}
+.settings-primary-small,.site-save-btn{background:#174c88;border-radius:11px;font-weight:700}.settings-search{border-radius:12px;box-shadow:none}.settings-warning{border-radius:10px;font-size:12px}.settings-site-item{padding-top:12px;padding-bottom:12px}.settings-row strong,.settings-section-title strong{font-size:15px;color:#344e70}
+.site-editor-form input,.site-editor-form select,.site-editor-form textarea,.contact-editor input,.contact-editor select,.contact-editor textarea{border:1px solid var(--line);border-radius:11px;background:var(--soft);color:var(--text);padding:12px;font-size:14px;line-height:1.5;max-width:100%}
+.contact-editor{padding:22px;border-radius:22px;background:var(--card)}.contact-editor h2{font-size:23px;color:#1e3d66;letter-spacing:-.5px}.contact-editor label{font-size:13px;color:#526a87}.contact-editor .contact-actions button{font-size:14px;min-height:46px;border-radius:11px}.contact-editor .contact-actions button[type=submit]{background:#174c88}
+.transfer-help p{font-size:14px;line-height:1.8}.transfer-help form{margin-top:18px}.transfer-help form button{width:100%;min-height:44px}.transfer-help textarea{width:100%;font:inherit;line-height:1.7}.transfer-help::backdrop{background:#071b36a6;backdrop-filter:blur(3px)}
+.detail-box{background:var(--card);padding:24px;border-radius:25px 25px 0 0}.detail-title{color:#1e3d66;font-size:26px}.detail-address{font-size:14px;line-height:1.8}.detail-buttons button{border-radius:12px;font-size:13px;min-height:46px}.app-footer{color:#91a0b2;font-size:10px;padding-top:22px}
+body.dark{--bg:#101924;--card:#192536;--soft:#202e41;--line:#304059;--text:#e5edf7;--muted:#a4b2c5;background:var(--bg)}
+body.dark .app{background:var(--bg)}body.dark .app-sections{background:#172333;border-color:var(--line)}body.dark .app-sections button.selected{background:#2b4262;color:#eef5ff}body.dark .app-sections button:not(.selected){background:transparent;color:#a5b6cf}
+body.dark .contact-filters button:not(.selected){background:transparent;color:#adc2dd}body.dark .contact-filters button.selected,body.dark .tab.active{background:#315e97;color:#fff}
+body.dark .site-card,body.dark .contact-card,body.dark .search-box,body.dark .settings-section,body.dark .contact-editor,body.dark .detail-box{background:var(--card);border-color:var(--line)}
+body.dark .site-title,body.dark .contact-card h3,body.dark .settings-head h2,body.dark .contact-editor h2,body.dark .detail-title{color:#d2e4ff}
+body.dark .site-card .info-grid,body.dark .contact-note,body.dark .site-card .meta-chip{background:var(--soft)}body.dark .site-card .info-box{background:transparent}body.dark .site-card .info-box strong{color:#bcd3f2}
+body.dark .contact-card p,body.dark .site-card .address,body.dark .settings-row p,body.dark .settings-section-title p{color:#a7b8ce}body.dark .contact-card .contact-phone,body.dark .settings-row strong,body.dark .settings-section-title strong,body.dark #contactCount,body.dark .site-total-pill{color:#d0dff3}
+body.dark .contact-avatar,body.dark .contact-badge{background:#293d59;color:#b8d4f8}body.dark .contact-transfer-actions button,body.dark .contacts-toolbar button:not(#addContactBtn),body.dark #refreshBtn{color:#b4cae6;border-color:var(--line)}
+body.dark .contact-card .contact-actions a:nth-child(2),body.dark .card-buttons button:nth-child(1){background:#293f5e;color:#c4dcfa}body.dark .contact-editor input,body.dark .contact-editor select,body.dark .contact-editor textarea,body.dark .site-editor-form input,body.dark .site-editor-form select,body.dark .site-editor-form textarea{background:var(--soft);color:var(--text);border-color:var(--line)}body.dark .contact-editor label{color:#b5c7df}
+body.dark .settings-section a{color:#b8d5ff}body.dark .contact-card small{color:#a9bdd7}
+@media(max-width:360px){.site-card,.contact-card{padding:13px}.card-buttons{gap:4px}.card-buttons button{font-size:10px}.site-title{font-size:18px}.contact-card h3{font-size:19px}.contact-card small{font-size:12px}.contacts-toolbar{flex-wrap:wrap}.department-heading{flex-wrap:wrap}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}

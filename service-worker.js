@@ -1,13 +1,15 @@
 const CACHE_PREFIX = `total-eng-address-${encodeURIComponent(self.registration.scope)}-`;
-const CACHE_NAME = `${CACHE_PREFIX}v3-8-0`;
+const CACHE_NAME = `${CACHE_PREFIX}v3-8-1`;
 const APP_SHELL = [
   './',
   './index.html',
-  './style.css?v=3.8.0',
-  './manifest.json?v=3.8.0',
+  './style.css?v=3.8.0-brand1',
+  './manifest.json?v=3.8.1',
+  './ui-refresh.css?v=3.8.1',
   './robots.txt',
-  './js/app.js?v=3.8.0',
-  './js/contacts.js?v=3.8.0',
+  './js/app.js?v=3.8.1',
+  './js/contacts.js?v=3.8.1',
+  './js/contact-transfer.js?v=3.8.1',
   './js/departments.js?v=3.8.0',
   './data/sites.json',
   './img/logo.png',
@@ -15,7 +17,12 @@ const APP_SHELL = [
   './img/icon-180.png',
   './img/icon-192.png',
   './img/icon-512.png',
-  './img/icon-maskable-512.png'
+  './img/icon-maskable-512.png',
+  './img/app-icon-v380-32.png',
+  './img/app-icon-v380-180.png',
+  './img/app-icon-v380-192.png',
+  './img/app-icon-v380-512.png',
+  './img/app-icon-v380-maskable-512.png'
 ];
 
 self.addEventListener('install', (event) => {
@@ -91,6 +98,8 @@ self.addEventListener('fetch', (event) => {
     || url.pathname.endsWith('/js/app.js')
     || url.pathname.endsWith('/js/contacts.js')
     || url.pathname.endsWith('/js/departments.js')
+    || url.pathname.endsWith('/js/contact-transfer.js')
+    || url.pathname.endsWith('/ui-refresh.css')
     || url.pathname.endsWith('/style.css')
     || url.pathname.endsWith('/manifest.json')
     || url.pathname.endsWith('/service-worker.js');
